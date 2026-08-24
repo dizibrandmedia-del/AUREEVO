@@ -1,0 +1,10 @@
+name = "aureevo-luxury"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+# Optional Cloudflare KV, D1 or Hyperdrive Bindings
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "aureevo-db"
+# database_id = "your-d1-database-id"

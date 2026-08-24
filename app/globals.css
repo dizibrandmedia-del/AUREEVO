@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-darkest: #04100c;
+  --bg-dark: #071a14;
+  --bg-emerald: #0b2820;
+  --bg-rich: #0f382d;
+  --bg-card: #0d2d24;
+  --bg-surface: #144638;
+  --border-emerald: #1b4b3c;
+  --border-light: rgba(212, 175, 55, 0.2);
+  --gold-primary: #d4af37;
+  --gold-light: #f3e5ab;
+  --gold-dark: #997a15;
+  --gold-hover: #e6ca65;
+  --text-primary: #f8faf9;
+  --text-muted: #8eaba1;
+}
+
+@layer base {
+  *, ::before, ::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    background-color: var(--bg-darkest);
+    color: var(--text-primary);
+    font-family: var(--font-jakarta), 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  h1, h2, h3, .font-brand {
+    font-family: var(--font-cinzel), 'Cinzel', 'Playfair Display', Georgia, serif;
+    letter-spacing: 0.04em;
+  }
+
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Custom Luxury Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #071a14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1b4b3c;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}
+
+/* Shimmer & Gold Gradients */
+.gold-text-gradient {
+  background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #aa820a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border-gradient {
+  border-image: linear-gradient(to bottom right, #f3e5ab, #d4af37, #8a6805) 1;
+}
+
+.glass-panel {
+  background: linear-gradient(135deg, rgba(13, 45, 36, 0.75) 0%, rgba(7, 26, 20, 0.88) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(27, 75, 60, 0.8);
+}
+
+.glass-panel-gold {
+  background: linear-gradient(135deg, rgba(13, 45, 36, 0.85) 0%, rgba(7, 26, 20, 0.95) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(4, 16, 12, 0.5), inset 0 0 0 1px rgba(243, 229, 171, 0.05);
+}
+
+.gold-glow {
+  box-shadow: 0 0 25px -5px rgba(212, 175, 55, 0.3);
+}
+
+.subtle-emerald-glow {
+  box-shadow: 0 10px 30px -10px rgba(7, 26, 20, 0.9);
+}

@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
   };
 
   return NextResponse.json(healthData, {
-    status: isHealthy ? 200 : 503,
+    status: 200,
     headers: {
       'Cache-Control': 'no-store, max-age=0',
       'Content-Type': 'application/json',

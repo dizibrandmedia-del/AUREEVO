@@ -123,6 +123,7 @@ export async function GET(req: NextRequest) {
         limit,
         totalPages: Math.ceil((inStock ? finalProducts.length : total) / limit) || 1,
       },
+    });
   } catch (err: any) {
     console.error('Products API fallback triggered:', err);
     const fallbackProducts = [

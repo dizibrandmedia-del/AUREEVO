@@ -18,6 +18,8 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 
+import { parseProductImages } from '@/lib/utils';
+
 interface QuickViewModalProps {
   product: any | null;
   isOpen: boolean;
@@ -35,7 +37,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
   if (!isOpen || !product) return null;
 
-  const images = product.images ? JSON.parse(product.images) : [];
+  const images = parseProductImages(product?.images);
   const primaryImage = images[selectedImageIndex] || '/images/aureevo-logo.png';
   const inWishlist = isInWishlist(product.id, selectedVariant?.id);
 

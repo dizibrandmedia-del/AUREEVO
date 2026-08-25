@@ -42,3 +42,22 @@ export function truncate(str: string, length = 60): string {
   if (!str) return '';
   return str.length > length ? str.substring(0, length) + '...' : str;
 }
+
+export function parseProductImages(images: any, fallback = '/images/aureevo-logo.png'): string[] {
+  if (!images) return [fallback];
+  if (Array.isArray(images)) return images.length > 0 ? images : [fallback];
+  if (typeof images === 'string') {
+    try {
+      const trimmed = images.trim();
+      if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (typeof parsed === 'string' && parsed.length > 0) return [parsed];
+      }
+      return trimmed.length > 0 ? [trimmed] : [fallback];
+    } catch {
+      return images.length > 0 ? [images] : [fallback];
+    }
+  }
+  return [fallback];
+}

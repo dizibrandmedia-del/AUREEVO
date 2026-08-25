@@ -16,6 +16,8 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { QuickViewModal } from './QuickViewModal';
 
+import { parseProductImages } from '@/lib/utils';
+
 interface ProductCardProps {
   product: any;
 }
@@ -27,7 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const images = product.images ? JSON.parse(product.images) : [];
+  const images = parseProductImages(product?.images);
   const primaryImage = images[0] || '/images/aureevo-logo.png';
   const secondaryImage = images[1] || primaryImage;
 

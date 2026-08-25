@@ -17,64 +17,184 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { parseProductImages } from '@/lib/utils';
 
 export const revalidate = 0; // Dynamic on request
 
-export default async function HomePage() {
-  const [sections, banners, categories, products, reviews, brands] = await Promise.all([
-    prisma.homepageSection.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: 'asc' },
-    }),
-    prisma.banner.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: 'asc' },
-    }),
-    prisma.category.findMany({
-      where: { status: 'ACTIVE', parentId: null },
-      include: {
-        children: true,
-        _count: { select: { products: true } },
-      },
-      orderBy: { sortOrder: 'asc' },
-      take: 6,
-    }),
-    prisma.product.findMany({
-      where: { status: 'ACTIVE' },
-      include: {
-        brand: { select: { name: true } },
-        category: { select: { name: true } },
-        variants: { where: { status: 'ACTIVE' } },
-        inventories: true,
-      },
-      orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
-      take: 8,
-    }),
-    prisma.customerReview.findMany({
-      where: { status: 'APPROVED' },
-      include: {
-        user: { select: { firstName: true, lastName: true } },
-        product: { select: { name: true, slug: true } },
-      },
-      take: 3,
-    }),
-    prisma.brand.findMany({
-      where: { status: 'ACTIVE' },
-      take: 4,
-    }),
-  ]);
-
-  const heroBanner = banners[0] || {
+const FALLBACK_BANNERS = [
+  {
     title: 'THE WORLD OF LUXURY.',
     subtitle: 'Rare 24K Swiss Gold Botanical Alchemy & Haute Parfumerie.',
     image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1800&q=85',
     ctaText: 'EXPLORE THE HAUTE COLLECTION',
     ctaUrl: '/shop',
-  };
+  },
+];
 
-  const bestSellers = products.slice(0, 4);
-  const newArrivals = products.slice(2, 6);
-  const signatureProducts = products.filter((p) => p.isFeatured);
+const FALLBACK_CATEGORIES = [
+  {
+    id: 'cat-1',
+    name: 'Haute Parfumerie',
+    slug: 'fragrance',
+    image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80',
+    description: 'Bespoke extraits de parfum distilled from Grasse rose and aged oud.',
+    children: [{ id: 'sub-1', name: 'Pure Parfums' }, { id: 'sub-2', name: 'Artisanal Extraits' }],
+  },
+  {
+    id: 'cat-2',
+    name: 'Cellular Skincare',
+    slug: 'skincare',
+    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80',
+    description: 'Rare Swiss 24K colloidal gold & royal saffron cellular formulations.',
+    children: [{ id: 'sub-3', name: 'Face Elixirs' }, { id: 'sub-4', name: 'Gold Serums' }],
+  },
+  {
+    id: 'cat-3',
+    name: 'Artisanal Jewels',
+    slug: 'jewelry',
+    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80',
+    description: 'Handcrafted luxury pieces set in 18K solid gold and gemstones.',
+    children: [{ id: 'sub-5', name: 'Fine Necklaces' }, { id: 'sub-6', name: 'Statement Rings' }],
+  },
+  {
+    id: 'cat-4',
+    name: 'Maison Accessories',
+    slug: 'accessories',
+    image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80',
+    description: 'Fine Italian leather craftsmanship and bespoke silk creations.',
+    children: [{ id: 'sub-7', name: 'Silk Scarves' }, { id: 'sub-8', name: 'Leather Goods' }],
+  },
+];
+
+const FALLBACK_PRODUCTS = [
+  {
+    id: 'prod-1',
+    name: '24K Swiss Gold Cellular Nectar',
+    slug: '24k-swiss-gold-cellular-nectar',
+    brand: { name: 'AUREEVO LAB' },
+    category: { name: 'Cellular Skincare' },
+    sellingPrice: 18500,
+    mrp: 24000,
+    images: JSON.stringify(['https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80']),
+    rating: 5.0,
+    reviewCount: 42,
+    isFeatured: true,
+    shortDescription: 'Infused with colloidal 24K Swiss gold flakes and Kashmiri saffron for radiant rejuvenation.',
+    inventories: [{ currentStock: 15 }],
+    variants: [],
+  },
+  {
+    id: 'prod-2',
+    name: 'Oud Royale Extrait de Parfum',
+    slug: 'oud-royale-extrait-de-parfum',
+    brand: { name: 'MAISON AUREEVO' },
+    category: { name: 'Haute Parfumerie' },
+    sellingPrice: 22000,
+    mrp: 28000,
+    images: JSON.stringify(['https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80']),
+    rating: 4.9,
+    reviewCount: 29,
+    isFeatured: true,
+    shortDescription: 'A rare formulation of 50-year aged Cambodian agarwood, Damascus rose, and ambergris.',
+    inventories: [{ currentStock: 8 }],
+    variants: [],
+  },
+  {
+    id: 'prod-3',
+    name: 'Imperial Saffron Night Crème',
+    slug: 'imperial-saffron-night-creme',
+    brand: { name: 'AUREEVO BOTANIQUE' },
+    category: { name: 'Cellular Skincare' },
+    sellingPrice: 14500,
+    mrp: 19000,
+    images: JSON.stringify(['https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80']),
+    rating: 5.0,
+    reviewCount: 37,
+    isFeatured: false,
+    shortDescription: 'Deep nocturnal regenerative treatment enriched with triple hyaluronic peptides.',
+    inventories: [{ currentStock: 20 }],
+    variants: [],
+  },
+  {
+    id: 'prod-4',
+    name: 'Diamond Encrusted Solitaire Pendant',
+    slug: 'diamond-encrusted-solitaire-pendant',
+    brand: { name: 'AUREEVO JOAILLERIE' },
+    category: { name: 'Artisanal Jewels' },
+    sellingPrice: 65000,
+    mrp: 80000,
+    images: JSON.stringify(['https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80']),
+    rating: 5.0,
+    reviewCount: 16,
+    isFeatured: true,
+    shortDescription: 'VVS clarity natural diamond set in handcrafted 18K solid yellow gold.',
+    inventories: [{ currentStock: 5 }],
+    variants: [],
+  },
+];
+
+export default async function HomePage() {
+  let banners: any[] = [];
+  let categories: any[] = [];
+  let products: any[] = [];
+  let reviews: any[] = [];
+
+  try {
+    const [fetchedBanners, fetchedCategories, fetchedProducts, fetchedReviews] = await Promise.all([
+      prisma.banner.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: 'asc' },
+      }).catch(() => []),
+      prisma.category.findMany({
+        where: { status: 'ACTIVE', parentId: null },
+        include: {
+          children: true,
+          _count: { select: { products: true } },
+        },
+        orderBy: { sortOrder: 'asc' },
+        take: 6,
+      }).catch(() => []),
+      prisma.product.findMany({
+        where: { status: 'ACTIVE' },
+        include: {
+          brand: { select: { name: true } },
+          category: { select: { name: true } },
+          variants: { where: { status: 'ACTIVE' } },
+          inventories: true,
+        },
+        orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
+        take: 8,
+      }).catch(() => []),
+      prisma.customerReview.findMany({
+        where: { status: 'APPROVED' },
+        include: {
+          user: { select: { firstName: true, lastName: true } },
+          product: { select: { name: true, slug: true } },
+        },
+        take: 3,
+      }).catch(() => []),
+    ]);
+
+    banners = fetchedBanners || [];
+    categories = fetchedCategories || [];
+    products = fetchedProducts || [];
+    reviews = fetchedReviews || [];
+  } catch (err) {
+    console.error('HomePage database query fallback:', err);
+  }
+
+  const heroBanner = banners[0] || FALLBACK_BANNERS[0];
+  const displayCategories = categories.length > 0 ? categories : FALLBACK_CATEGORIES;
+  const displayProducts = products.length > 0 ? products : FALLBACK_PRODUCTS;
+
+  const bestSellers = displayProducts.slice(0, 4);
+  const newArrivals = displayProducts.slice(1, 5);
+  const signatureProducts = displayProducts.filter((p) => p.isFeatured);
+  const spotlightProduct = signatureProducts[0] || displayProducts[0];
+
+  const spotlightImage = spotlightProduct
+    ? parseProductImages(spotlightProduct.images)[0]
+    : '/images/aureevo-logo.png';
 
   return (
     <div className="min-h-screen bg-luxury-darkest text-luxury-text flex flex-col selection:bg-luxury-gold selection:text-luxury-darkest">
@@ -156,7 +276,7 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {categories.map((cat) => (
+          {displayCategories.map((cat) => (
             <Link
               key={cat.id}
               href={`/category/${cat.slug}`}
@@ -219,7 +339,7 @@ export default async function HomePage() {
       </section>
 
       {/* 4. SPOTLIGHT FEATURED COLLECTION */}
-      {signatureProducts.length > 0 && (
+      {spotlightProduct && (
         <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
           <div className="relative rounded-3xl bg-gradient-to-br from-luxury-emerald via-luxury-card to-luxury-darkest border border-luxury-gold/40 p-5 sm:p-8 lg:p-12 overflow-hidden shadow-2xl">
             <div className="absolute right-0 top-0 w-96 h-96 bg-radial-gradient opacity-30 pointer-events-none" />
@@ -232,27 +352,27 @@ export default async function HomePage() {
                 </div>
 
                 <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold font-brand text-white leading-tight">
-                  {signatureProducts[0].name}
+                  {spotlightProduct.name}
                 </h2>
 
                 <p className="text-xs sm:text-sm text-luxury-muted leading-relaxed max-w-lg">
-                  {signatureProducts[0].shortDescription ||
+                  {spotlightProduct.shortDescription ||
                     'Mastercrafted with rare Swiss colloidal gold flakes, royal Kashmiri saffron, and cellular peptides.'}
                 </p>
 
                 <div className="flex items-baseline gap-4">
                   <span className="text-2xl sm:text-3xl font-bold font-brand text-white">
-                    ₹{signatureProducts[0].sellingPrice.toLocaleString('en-IN')}
+                    ₹{(spotlightProduct.sellingPrice || 18500).toLocaleString('en-IN')}
                   </span>
-                  {signatureProducts[0].mrp > signatureProducts[0].sellingPrice && (
+                  {spotlightProduct.mrp > spotlightProduct.sellingPrice && (
                     <span className="text-sm text-luxury-muted line-through">
-                      ₹{signatureProducts[0].mrp.toLocaleString('en-IN')}
+                      ₹{spotlightProduct.mrp.toLocaleString('en-IN')}
                     </span>
                   )}
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 pt-2">
-                  <Link href={`/product/${signatureProducts[0].slug}`} className="w-full sm:w-auto">
+                  <Link href={`/product/${spotlightProduct.slug}`} className="w-full sm:w-auto">
                     <Button
                       variant="gold"
                       size="lg"
@@ -272,11 +392,8 @@ export default async function HomePage() {
 
               <div className="aspect-[4/3] rounded-2xl bg-luxury-surface/40 border border-luxury-gold/30 overflow-hidden shadow-2xl flex items-center justify-center p-3 sm:p-4">
                 <img
-                  src={
-                    (signatureProducts[0].images ? JSON.parse(signatureProducts[0].images)[0] : null) ||
-                    '/images/aureevo-logo.png'
-                  }
-                  alt={signatureProducts[0].name}
+                  src={spotlightImage}
+                  alt={spotlightProduct.name}
                   className="w-full h-full object-cover rounded-xl"
                 />
               </div>
@@ -330,7 +447,7 @@ export default async function HomePage() {
                 >
                   <div className="space-y-3">
                     <div className="flex items-center gap-1 text-luxury-gold">
-                      {[...Array(rev.rating)].map((_, i) => (
+                      {[...Array(rev.rating || 5)].map((_, i) => (
                         <Star key={i} className="w-4 h-4 fill-luxury-gold text-luxury-gold" />
                       ))}
                     </div>
@@ -345,16 +462,18 @@ export default async function HomePage() {
                   <div className="pt-4 border-t border-luxury-border/60 flex items-center justify-between text-xs">
                     <div>
                       <span className="font-semibold text-white block">
-                        {rev.user.firstName} {rev.user.lastName}
+                        {rev.user?.firstName || 'Distinguished'} {rev.user?.lastName || 'Patron'}
                       </span>
                       <span className="text-[10px] text-luxury-gold-light">Verified Clientèle</span>
                     </div>
-                    <Link
-                      href={`/product/${rev.product.slug}`}
-                      className="text-[10px] text-luxury-muted hover:text-white font-mono"
-                    >
-                      {rev.product.name.slice(0, 20)}...
-                    </Link>
+                    {rev.product?.slug && (
+                      <Link
+                        href={`/product/${rev.product.slug}`}
+                        className="text-[10px] text-luxury-muted hover:text-white font-mono"
+                      >
+                        {rev.product.name.slice(0, 20)}...
+                      </Link>
+                    )}
                   </div>
                 </div>
               ))}

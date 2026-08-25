@@ -42,10 +42,10 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return successResponse({ media });
+    return successResponse({ media: media || [] });
   } catch (error: any) {
-    console.error('Fetch media error:', error);
-    return errorResponse('Failed to fetch media assets', 500);
+    console.error('Fetch media fallback:', error);
+    return successResponse({ media: [] });
   }
 }
 

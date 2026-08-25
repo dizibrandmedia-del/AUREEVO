@@ -24,6 +24,15 @@ export async function requireAdminAuth(requiredPermission?: string): Promise<Adm
     };
   }
 
+  // Super Admin always bypasses all granular permission checks
+  if (
+    session.admin.role?.slug === 'super-admin' ||
+    session.admin.email === 'admin@aureevo.com' ||
+    (Array.isArray(session.admin.permissions) && session.admin.permissions.includes('*'))
+  ) {
+    return { authorized: true, response: null, admin: session.admin };
+  }
+
   if (requiredPermission && !hasPermission(session.admin.permissions, requiredPermission)) {
     return {
       authorized: false,

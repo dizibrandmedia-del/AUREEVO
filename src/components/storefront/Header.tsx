@@ -288,65 +288,30 @@ export default function Header() {
                       </Link>
                     </div>
 
-                    {/* RBAC Portal Direct Links */}
-                    <div className="border-t border-slate-100 py-1.5 bg-slate-50/50">
-                      <div className="px-4 py-1 text-[11px] font-bold uppercase text-slate-400">
-                        Portal Navigation
+                    {/* Staff Portal Links (Only shown if staff user is logged in) */}
+                    {currentUser && ["SUPER_ADMIN", "ADMIN_MANAGER", "SALES_MANAGER", "LISTING_EXECUTIVE"].includes(currentUser.role) && (
+                      <div className="border-t border-slate-100 py-1.5 bg-slate-50/50">
+                        <div className="px-4 py-1 text-[11px] font-bold uppercase text-slate-400">
+                          Staff Portals
+                        </div>
+                        <Link
+                          href="/admin"
+                          onClick={() => setRoleDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-1.5 text-xs text-brand-emerald hover:bg-emerald-50 font-semibold"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          Admin ERP Portal
+                        </Link>
+                        <Link
+                          href="/sales"
+                          onClick={() => setRoleDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-1.5 text-xs text-brand-gold-dark hover:bg-amber-50 font-semibold"
+                        >
+                          <Zap className="w-3.5 h-3.5" />
+                          Sales CRM & Listing Portal
+                        </Link>
                       </div>
-                      <Link
-                        href="/admin"
-                        onClick={() => setRoleDropdownOpen(false)}
-                        className="flex items-center gap-2 px-4 py-1.5 text-xs text-brand-blue hover:bg-blue-50 font-semibold"
-                      >
-                        <ShieldCheck className="w-3.5 h-3.5" />
-                        Admin ERP Portal
-                      </Link>
-                      <Link
-                        href="/sales"
-                        onClick={() => setRoleDropdownOpen(false)}
-                        className="flex items-center gap-2 px-4 py-1.5 text-xs text-brand-violet hover:bg-violet-50 font-semibold"
-                      >
-                        <Zap className="w-3.5 h-3.5" />
-                        Sales CRM & Listing Portal
-                      </Link>
-                    </div>
-
-                    {/* Quick Role Switcher for rapid pairing verification */}
-                    <div className="border-t border-slate-100 py-1.5">
-                      <div className="px-4 py-1 text-[11px] font-bold uppercase text-slate-400">
-                        Switch Role (Testing)
-                      </div>
-                      <button
-                        onClick={() => switchRole("SUPER_ADMIN")}
-                        className="w-full text-left px-4 py-1 text-xs text-slate-600 hover:bg-slate-100"
-                      >
-                        👑 Super Admin (Full ERP Access)
-                      </button>
-                      <button
-                        onClick={() => switchRole("ADMIN_MANAGER")}
-                        className="w-full text-left px-4 py-1 text-xs text-slate-600 hover:bg-slate-100"
-                      >
-                        🛠️ Admin Manager (Stock & Margins)
-                      </button>
-                      <button
-                        onClick={() => switchRole("SALES_MANAGER")}
-                        className="w-full text-left px-4 py-1 text-xs text-slate-600 hover:bg-slate-100"
-                      >
-                        💼 Sales Manager (CRM & Quotes)
-                      </button>
-                      <button
-                        onClick={() => switchRole("LISTING_EXECUTIVE")}
-                        className="w-full text-left px-4 py-1 text-xs text-slate-600 hover:bg-slate-100"
-                      >
-                        📝 Listing Executive (No Margin Access)
-                      </button>
-                      <button
-                        onClick={() => switchRole("CUSTOMER")}
-                        className="w-full text-left px-4 py-1 text-xs text-slate-600 hover:bg-slate-100"
-                      >
-                        👤 Customer View
-                      </button>
-                    </div>
+                    )}
                   </div>
                 )}
               </div>

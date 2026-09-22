@@ -31,7 +31,7 @@ interface MobileDrawerProps {
   currentUser: any;
   onPincodeClick: () => void;
   currentPincode: string;
-  switchRole: (role: string) => void;
+  switchRole?: (role: string) => void;
 }
 
 export default function MobileDrawer({
@@ -40,10 +40,8 @@ export default function MobileDrawer({
   currentUser,
   onPincodeClick,
   currentPincode,
-  switchRole,
 }: MobileDrawerProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-  const [showRoleSwitcher, setShowRoleSwitcher] = useState(false);
 
   const cartCount = useCartStore((s) => s.getItemCount());
   const wishlistCount = useWishlistStore((s) => s.items.length);
@@ -380,89 +378,32 @@ export default function MobileDrawer({
             </Link>
           </div>
 
-          {/* Admin & Staff Portals (Fast Direct Navigation) */}
-          <div className="py-3 px-3 space-y-1.5">
-            <div className="px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Staff & Management Portals
-            </div>
+          {/* Admin & Staff Portals (Only visible to authenticated staff members) */}
+          {currentUser && ["SUPER_ADMIN", "ADMIN_MANAGER", "SALES_MANAGER", "LISTING_EXECUTIVE"].includes(currentUser.role) && (
+            <div className="py-3 px-3 space-y-1.5 border-t border-slate-100">
+              <div className="px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Staff & Management Portals
+              </div>
 
-            <Link
-              href="/admin"
-              onClick={onClose}
-              className="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-50 text-blue-900 border border-blue-200 font-semibold text-xs hover:bg-blue-100 transition active:scale-[0.99]"
-            >
-              <ShieldCheck className="w-4 h-4 text-blue-700 shrink-0" />
-              <span>Admin ERP Portal</span>
-            </Link>
-
-            <Link
-              href="/sales"
-              onClick={onClose}
-              className="flex items-center gap-2.5 p-2.5 rounded-xl bg-purple-50 text-purple-900 border border-purple-200 font-semibold text-xs hover:bg-purple-100 transition active:scale-[0.99]"
-            >
-              <Zap className="w-4 h-4 text-purple-700 shrink-0" />
-              <span>Sales CRM & Quotes</span>
-            </Link>
-
-            {/* Quick Testing Role Switcher */}
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => setShowRoleSwitcher(!showRoleSwitcher)}
-                className="w-full flex items-center justify-between text-[11px] text-slate-600 font-bold px-2.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition"
+              <Link
+                href="/admin"
+                onClick={onClose}
+                className="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200 font-semibold text-xs hover:bg-emerald-100 transition active:scale-[0.99]"
               >
-                <span>🧪 Quick Role Switcher</span>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform ${showRoleSwitcher ? "rotate-180" : ""}`}
-                />
-              </button>
+                <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
+                <span>Admin ERP Portal</span>
+              </Link>
 
-              {showRoleSwitcher && (
-                <div className="space-y-1 mt-1 p-2 bg-slate-100 rounded-xl text-xs animate-fadeIn border border-slate-200">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      switchRole("SUPER_ADMIN");
-                      onClose();
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-white text-slate-800 font-medium active:bg-blue-50"
-                  >
-                    👑 Super Admin
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      switchRole("ADMIN_MANAGER");
-                      onClose();
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-white text-slate-800 font-medium active:bg-blue-50"
-                  >
-                    🛠️ Admin Manager
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      switchRole("SALES_MANAGER");
-                      onClose();
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-white text-slate-800 font-medium active:bg-blue-50"
-                  >
-                    💼 Sales Manager
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      switchRole("CUSTOMER");
-                      onClose();
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-white text-slate-800 font-medium active:bg-blue-50"
-                  >
-                    👤 Customer View
-                  </button>
-                </div>
-              )}
+              <Link
+                href="/sales"
+                onClick={onClose}
+                className="flex items-center gap-2.5 p-2.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 font-semibold text-xs hover:bg-amber-100 transition active:scale-[0.99]"
+              >
+                <Zap className="w-4 h-4 text-amber-700 shrink-0" />
+                <span>Sales CRM & Quotes</span>
+              </Link>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Drawer Footer with VIP Concierge Support & Call */}

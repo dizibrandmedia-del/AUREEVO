@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       "CUSTOMER",
       customer.id,
       { email: customer.email, name: customer.name },
-      customer.id,
+      undefined,
       customer.name
     );
 

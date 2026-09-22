@@ -11,6 +11,7 @@ import {
   Bell,
   Search,
   ExternalLink,
+  Menu,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -20,6 +21,7 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/v1/auth/me")
@@ -48,13 +50,20 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen flex bg-slate-100 text-slate-900">
       {/* Sidebar */}
-      <AdminSidebar />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Admin Topbar */}
-        <header className="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between gap-4 sticky top-0 z-40">
-          <div className="flex items-center gap-3">
+        <header className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3 sticky top-0 z-40">
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="md:hidden p-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700"
+              aria-label="Toggle Admin Sidebar"
+            >
+              <Menu className="w-5 h-5 text-slate-700" />
+            </button>
             <span className="font-bold text-slate-800 text-sm">
               AUREVO ERP Workspace
             </span>

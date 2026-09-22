@@ -65,7 +65,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <>
-      <div className="group relative bg-white rounded-3xl border border-brand-border/80 hover:border-brand-gold/60 p-4 flex flex-col justify-between transition-all duration-300 hover:shadow-card-hover">
+      <div className="group relative bg-white rounded-2xl sm:rounded-3xl border border-brand-border/80 hover:border-brand-gold/60 p-3 sm:p-4 flex flex-col justify-between transition-all duration-300 hover:shadow-card-hover">
         {/* Badges & Actions Bar */}
         <div className="relative">
           {/* Top Badges */}
@@ -195,40 +195,40 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-2 mt-3">
+            <div className="grid grid-cols-2 gap-1.5 sm:gap-2 mt-3">
               <button
                 onClick={handleAddToCart}
-                className="w-full flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold border border-brand-emerald text-brand-emerald hover:bg-brand-emerald hover:text-brand-gold-light transition active:scale-95 shadow-sm"
+                className="w-full flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl text-[11px] sm:text-xs font-bold border border-brand-emerald text-brand-emerald hover:bg-brand-emerald hover:text-brand-gold-light transition active:scale-95 shadow-sm"
               >
-                <ShoppingCart className="w-3.5 h-3.5" />
-                Add to Cart
+                <ShoppingCart className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">Add to Cart</span>
               </button>
               <button
                 onClick={handleBuyNow}
-                className="w-full flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-black bg-gold-gradient hover:bg-gold-gradient-hover text-brand-dark shadow-sm hover:shadow-gold-glow transition active:scale-95 uppercase font-luxury tracking-wide"
+                className="w-full flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl text-[11px] sm:text-xs font-black bg-gold-gradient hover:bg-gold-gradient-hover text-brand-dark shadow-sm hover:shadow-gold-glow transition active:scale-95 uppercase font-luxury tracking-wide"
               >
-                <Zap className="w-3.5 h-3.5 fill-current" />
-                Buy Now
+                <Zap className="w-3.5 h-3.5 fill-current shrink-0" />
+                <span className="truncate">Buy Now</span>
               </button>
             </div>
 
             {/* Omnichannel Best Price & WhatsApp Quote */}
-            <div className="flex items-center justify-between gap-1 mt-2.5 pt-1.5 border-t border-brand-border/40">
+            <div className="flex items-center justify-between gap-1 mt-2.5 pt-1.5 border-t border-brand-border/40 text-[10px] sm:text-[11px]">
               <button
                 type="button"
                 onClick={() => setIsLeadModalOpen(true)}
-                className="text-[11px] font-bold text-brand-gold-dark hover:text-brand-dark transition"
+                className="font-bold text-brand-gold-dark hover:text-brand-dark transition truncate"
               >
-                ⚡ Request Luxury Price
+                ⚡ Get Best Price
               </button>
 
               <button
                 type="button"
                 onClick={handleWhatsAppEnquiry}
-                className="text-[11px] text-emerald-700 hover:text-emerald-800 flex items-center gap-1 font-semibold"
+                className="text-emerald-700 hover:text-emerald-800 flex items-center gap-1 font-semibold shrink-0"
                 title="WhatsApp Enquiry"
               >
-                <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600" />
                 WhatsApp
               </button>
             </div>

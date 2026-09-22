@@ -16,6 +16,11 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/db";
 import ProductCard from "@/components/storefront/ProductCard";
+import {
+  CategoryStoryCircles,
+  CategoryBannerGrid,
+  TrustFeaturesBar,
+} from "@/components/storefront/KashikaRetailSections";
 
 export const revalidate = 60; // ISR cache revalidation every minute
 
@@ -72,9 +77,12 @@ export default async function HomePage() {
   const furnitureProducts = products.filter((p) => p.category?.slug === "furniture");
 
   return (
-    <div className="space-y-16 pb-12">
+    <div className="space-y-10 sm:space-y-14 pb-12">
+      {/* 1. KASHIKA-STYLE TOP CATEGORY STORY CIRCLES */}
+      <CategoryStoryCircles />
+
       {/* 2. HERO SECTION */}
-      <section className="relative overflow-hidden bg-brand-dark text-white pt-10 pb-16 lg:py-24 border-b border-brand-gold/20">
+      <section className="relative overflow-hidden bg-brand-dark text-white pt-8 pb-14 lg:py-20 border-b border-brand-gold/20">
         {/* Glow backdrop effects */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[480px] h-[480px] rounded-full bg-brand-gold/15 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[480px] h-[480px] rounded-full bg-brand-emerald/30 blur-3xl pointer-events-none" />
@@ -172,55 +180,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 3. CATEGORY EXPLORER */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <span className="text-xs font-bold text-brand-blue tracking-wider uppercase">
-              Explore Our Catalog
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-0.5">
-              Shop by Category
-            </h2>
-          </div>
-          <Link
-            href="/category/electronics"
-            className="text-xs font-bold text-brand-blue hover:text-blue-700 flex items-center gap-1 group"
-          >
-            All Categories <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
-          {[
-            { name: "Smart TVs", slug: "electronics", image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400", count: "4K & OLED" },
-            { name: "Inverter ACs", slug: "ac-cooling", image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400", count: "Split & Window" },
-            { name: "Refrigerators", slug: "refrigeration", image: "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=400", count: "Double & Side" },
-            { name: "Washing Machines", slug: "washing-cleaning", image: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400", count: "Front & Top" },
-            { name: "Kitchen", slug: "kitchen-appliances", image: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=400", count: "Microwave & Mixers" },
-            { name: "Furniture", slug: "furniture", image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400", count: "Teakwood & Sofas" },
-            { name: "Wedding Bundles", slug: "wedding-packages", image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=400", count: "₹1L - ₹10L+" },
-          ].map((cat, idx) => (
-            <Link
-              key={idx}
-              href={cat.slug === "wedding-packages" ? "/wedding-packages" : `/category/${cat.slug}`}
-              className="group bg-white rounded-2xl p-3 border border-slate-200 hover:border-brand-blue hover:shadow-card-hover transition text-center flex flex-col items-center justify-between"
-            >
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-slate-50 mb-2 p-2">
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  className="w-full h-full object-cover rounded-lg group-hover:scale-110 transition duration-300"
-                />
-              </div>
-              <h3 className="font-bold text-xs sm:text-sm text-slate-800 group-hover:text-brand-blue transition">
-                {cat.name}
-              </h3>
-              <span className="text-[10px] text-slate-400 font-medium">{cat.count}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* 3. KASHIKA-INSPIRED 2x4 VISUAL CATEGORY BANNER GRID */}
+      <CategoryBannerGrid />
 
       {/* 4. BEST DEALS (Countdown + Savings) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -547,6 +508,9 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* 16.5 KASHIKA TRUST & VALUE ASSURANCE BAR */}
+      <TrustFeaturesBar />
 
       {/* 17. B2B / BULK PURCHASE CALLOUT */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

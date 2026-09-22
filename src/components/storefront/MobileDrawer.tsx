@@ -20,6 +20,8 @@ import {
   Phone,
   Flame,
   CheckCircle2,
+  LogOut,
+  Lock,
 } from "lucide-react";
 import Logo from "@/components/common/Logo";
 import { MENU_CATEGORIES } from "./MegaMenu";
@@ -70,6 +72,14 @@ export default function MobileDrawer({
     if (slug === "wedding-packages") return "/wedding-packages";
     if (slug === "deals") return "/deals";
     return `/category/${slug}`;
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/v1/auth/logout", { method: "POST" });
+      onClose();
+      window.location.href = "/login";
+    } catch (err) {}
   };
 
   return (
@@ -404,6 +414,29 @@ export default function MobileDrawer({
               </Link>
             </div>
           )}
+
+          {/* Authentication Actions */}
+          <div className="p-3 border-t border-slate-100">
+            {currentUser ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-bold text-xs transition active:scale-[0.99]"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Sign Out ({currentUser.name?.split(" ")[0]})</span>
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-brand-emerald hover:bg-brand-dark text-brand-gold-light font-bold text-xs shadow-xs border border-brand-gold/30 transition active:scale-[0.99]"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Sign In / Portal Login</span>
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Drawer Footer with VIP Concierge Support & Call */}

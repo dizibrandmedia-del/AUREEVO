@@ -17,6 +17,7 @@ import {
   Layers,
   ShieldCheck,
   Zap,
+  LogOut,
 } from "lucide-react";
 import { useCartStore, useWishlistStore, useCompareStore } from "@/lib/store";
 import MegaMenu from "./MegaMenu";
@@ -69,6 +70,15 @@ export default function Header() {
     setTimeout(() => {
       mobileSearchInputRef.current?.focus();
     }, 120);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/v1/auth/logout", { method: "POST" });
+      setCurrentUser(null);
+      setRoleDropdownOpen(false);
+      window.location.href = "/login";
+    } catch (err) {}
   };
 
   const switchRole = async (targetRole: string) => {
@@ -265,9 +275,16 @@ export default function Header() {
                         </span>
                       </div>
                     ) : (
-                      <div className="px-4 py-2 border-b border-slate-100">
-                        <p className="font-semibold text-slate-900">Welcome to AUREVO</p>
-                        <p className="text-xs text-slate-500">Access orders & fast checkout</p>
+                      <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
+                        <p className="font-bold text-slate-900 text-xs">Welcome to AUREVO</p>
+                        <p className="text-[11px] text-slate-500 mb-2">Access orders, tracking & staff portals</p>
+                        <Link
+                          href="/login"
+                          onClick={() => setRoleDropdownOpen(false)}
+                          className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-brand-emerald text-brand-gold-light font-bold text-xs shadow-xs hover:bg-brand-dark transition"
+                        >
+                          Sign In / Portal Login
+                        </Link>
                       </div>
                     )}
 
@@ -310,6 +327,20 @@ export default function Header() {
                           <Zap className="w-3.5 h-3.5" />
                           Sales CRM & Listing Portal
                         </Link>
+                      </div>
+                    )}
+
+                    {/* Sign Out Button */}
+                    {currentUser && (
+                      <div className="border-t border-slate-100 py-1">
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="w-full text-left flex items-center gap-2 px-4 py-1.5 text-xs text-rose-600 hover:bg-rose-50 font-semibold transition"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          Sign Out
+                        </button>
                       </div>
                     )}
                   </div>

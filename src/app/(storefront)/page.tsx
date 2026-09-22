@@ -275,14 +275,30 @@ export default async function HomePage() {
         </h2>
 
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-3">
-          {brands.map((b) => (
-            <div
-              key={b.id}
-              className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-brand-blue flex items-center justify-center font-black text-sm text-slate-700 tracking-wider uppercase shadow-sm hover:shadow-card transition"
-            >
-              {b.name}
-            </div>
-          ))}
+          {brands.map((b) => {
+            const logoPath = b.logo || `/images/brands/${b.slug}.svg`;
+            return (
+              <Link
+                key={b.id}
+                href={`/search?q=${encodeURIComponent(b.name)}`}
+                title={`${b.name} - Authorized Brand Partner`}
+                className="group p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-brand-gold/60 flex flex-col items-center justify-center min-h-[74px] sm:min-h-[82px] shadow-2xs hover:shadow-md transition-all active:scale-95"
+              >
+                {logoPath ? (
+                  <img
+                    src={logoPath}
+                    alt={b.name}
+                    className="max-h-7 sm:max-h-8 max-w-[88%] w-auto object-contain transition-transform duration-200 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="font-black text-xs text-slate-700 tracking-wider uppercase">
+                    {b.name}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </div>
       </section>
 

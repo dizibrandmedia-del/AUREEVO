@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50" fill="none">
+  <!-- Voltas Typography -->
+  <g fill="#004B87" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" transform="translate(10, 31)">
+    <text x="0" y="0" font-size="24" letter-spacing="1">VOLTAS</text>
+  </g>
+  <!-- Red accent arc above A / TATA signature -->
+  <path d="M86 12c4-2 9-2 13 0" stroke="#E31837" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Sub-label: A TATA Enterprise -->
+  <g fill="#7A8B99" font-family="Arial, sans-serif" font-weight="700" font-size="7" letter-spacing="1.5">
+    <text x="12" y="42">A TATA PRODUCT</text>
+  </g>
+</svg>

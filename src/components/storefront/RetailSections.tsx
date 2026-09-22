@@ -160,14 +160,15 @@ const TRUST_FEATURES = [
 
 // 4. Authorized Brand Partners (Clean Vectors / Badges)
 const BRAND_PARTNERS = [
-  "SAMSUNG",
-  "LG ELECTRONICS",
-  "SONY",
-  "DAIKIN",
-  "HAIER",
-  "WHIRLPOOL",
-  "BOSCH",
-  "IFB",
+  { name: "Samsung", slug: "samsung", logo: "/images/brands/samsung.svg" },
+  { name: "LG", slug: "lg", logo: "/images/brands/lg.svg" },
+  { name: "Sony", slug: "sony", logo: "/images/brands/sony.svg" },
+  { name: "Whirlpool", slug: "whirlpool", logo: "/images/brands/whirlpool.svg" },
+  { name: "Bosch", slug: "bosch", logo: "/images/brands/bosch.svg" },
+  { name: "Philips", slug: "philips", logo: "/images/brands/philips.svg" },
+  { name: "Voltas", slug: "voltas", logo: "/images/brands/voltas.svg" },
+  { name: "Godrej", slug: "godrej", logo: "/images/brands/godrej.svg" },
+  { name: "AUREVO Living", slug: "aurevo-living", logo: "/images/brands/aurevo-living.svg" },
 ];
 
 // A. Top Category Story Circles (horizontal swipe on mobile)
@@ -340,18 +341,25 @@ export function BrandPartnersBar() {
               Authorized Manufacturer Warranties
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
-            100% Genuine Certified Stock
+          <span className="text-[11px] text-brand-gold-light/80 font-medium hidden sm:inline">
+            100% Genuine Direct Brand Alliances
           </span>
         </div>
-        <div className="flex items-center justify-between gap-4 sm:gap-8 overflow-x-auto scrollbar-none py-2 text-slate-300 font-bold tracking-widest text-xs sm:text-sm">
+        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-3">
           {BRAND_PARTNERS.map((brand, idx) => (
-            <div
+            <Link
               key={idx}
-              className="shrink-0 px-4 py-2 rounded-xl bg-white/5 border border-brand-gold/20 hover:border-brand-gold text-brand-gold-light hover:text-white transition shadow-xs"
+              href={`/search?q=${encodeURIComponent(brand.name)}`}
+              title={`${brand.name} Authorized Partner`}
+              className="group p-2.5 sm:p-3 rounded-2xl bg-white hover:bg-slate-50 border border-brand-gold/25 hover:border-brand-gold flex items-center justify-center min-h-[58px] sm:min-h-[68px] shadow-sm hover:shadow-gold-glow transition-all active:scale-95"
             >
-              {brand}
-            </div>
+              <img
+                src={brand.logo}
+                alt={brand.name}
+                className="max-h-6 sm:max-h-7 max-w-[85%] w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+                loading="lazy"
+              />
+            </Link>
           ))}
         </div>
       </div>

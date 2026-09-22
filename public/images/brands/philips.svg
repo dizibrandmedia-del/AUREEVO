@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50" fill="none">
+  <!-- Philips Blue Wordmark with clean geometric styling -->
+  <g fill="#0B5ED7" font-family="'Arial Black', 'Helvetica Neue', sans-serif" font-weight="900" transform="translate(12, 33)">
+    <text x="0" y="0" font-size="23" letter-spacing="1.5">PHILIPS</text>
+  </g>
+  <!-- Philips Shield / Waves accent -->
+  <path d="M136 14c4 0 8 3 8 7 0 6-8 13-8 13s-8-7-8-13c0-4 4-7 8-7z" fill="#0B5ED7" opacity="0.15"/>
+  <path d="M133 21c2-1 4 1 6 0" stroke="#0B5ED7" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

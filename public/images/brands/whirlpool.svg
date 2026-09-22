@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50" fill="none">
+  <!-- Whirlpool Oval Swirl Ring -->
+  <ellipse cx="65" cy="24" rx="55" ry="19" stroke="#EAA11F" stroke-width="3" fill="none" stroke-dasharray="140 30" transform="rotate(-7 65 24)"/>
+  <!-- Whirlpool Typography -->
+  <g fill="#0B2341" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900">
+    <text x="22" y="32" font-size="22" letter-spacing="-0.5" font-style="italic">Whirlpool</text>
+  </g>
+  <!-- Accent dot inside swirl -->
+  <circle cx="120" cy="18" r="3" fill="#EAA11F"/>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50" fill="none">
+  <!-- Godrej Signature Script Styling -->
+  <g fill="#006699" transform="translate(14, 10)">
+    <!-- Stylized G -->
+    <path d="M12 28c-6.5 0-10.5-4.5-10.5-11 0-7.5 5.5-13 13-13 5.5 0 8.5 2.8 9.5 5l-4 2.5c-.8-1.5-2.8-3-5.5-3-4.5 0-7.5 3.5-7.5 8.5 0 4.5 2.5 7.5 6.5 7.5 2.5 0 4.2-1 5.2-2v-4h-5.2v-4h9.8v9.8c-2.5 2.5-6.5 4.7-11.8 4.7z"/>
+    <!-- odrej in smooth connected cursive tone -->
+    <text x="32" y="22" font-family="'Brush Script MT', 'Segoe Script', cursive, sans-serif" font-size="28" font-weight="bold" fill="#006699" font-style="italic">
+      Godrej
+    </text>
+  </g>
+</svg>

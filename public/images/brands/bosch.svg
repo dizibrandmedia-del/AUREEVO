@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50" fill="none">
+  <!-- Bosch Red Armature / Magneto Icon -->
+  <g transform="translate(10, 8)">
+    <circle cx="17" cy="17" r="16" stroke="#EA1C24" stroke-width="3.5" fill="none"/>
+    <rect x="11" y="4" width="12" height="26" rx="2" stroke="#EA1C24" stroke-width="3" fill="none"/>
+  </g>
+  <!-- Bosch Wordmark -->
+  <g fill="#0B2341" font-family="'Arial Black', Impact, sans-serif" font-weight="900" transform="translate(56, 33)">
+    <text x="0" y="0" font-size="24" letter-spacing="1">BOSCH</text>
+  </g>
+</svg>

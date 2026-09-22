@@ -16,13 +16,13 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/db";
 import ProductCard from "@/components/storefront/ProductCard";
-import KashikaHeroSlider from "@/components/storefront/KashikaHeroSlider";
+import HeroBannerSlider from "@/components/storefront/HeroBannerSlider";
 import {
   CategoryStoryCircles,
   CategoryBannerGrid,
   TrustFeaturesBar,
   BrandPartnersBar,
-} from "@/components/storefront/KashikaRetailSections";
+} from "@/components/storefront/RetailSections";
 
 export const revalidate = 60; // ISR cache revalidation every minute
 
@@ -83,10 +83,10 @@ export default async function HomePage() {
       {/* 1. KASHIKA-STYLE TOP CATEGORY STORY CIRCLES */}
       <CategoryStoryCircles />
 
-      {/* 2. KASHIKA EXACT HERO CAROUSEL SLIDER */}
-      <KashikaHeroSlider />
+      {/* 2. AUREEVO BRAND-MATCHING HERO CAROUSEL SLIDER */}
+      <HeroBannerSlider />
 
-      {/* 3. KASHIKA-INSPIRED 2x4 VISUAL CATEGORY BANNER GRID (450x250) */}
+      {/* 3. 2x4 VISUAL CATEGORY BANNER GRID (450x250) */}
       <CategoryBannerGrid />
 
       {/* 4. BEST DEALS (Countdown + Savings) */}

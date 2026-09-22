@@ -6,10 +6,10 @@ import { MessageCircle, Phone, X } from "lucide-react";
 export default function FloatingWhatsApp() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const phoneNumber = "919839057744"; // Kashika / AUREEVO Verified Support Helpline
+  const phoneNumber = "919839057744"; // AUREEVO Verified Support Helpline
 
   const handleWhatsApp = (text?: string) => {
-    const defaultMsg = "Hi, I am shopping on AUREEVO & Kashika Electronics. Please share the best price, EMI options, and delivery timeline.";
+    const defaultMsg = "Hi, I am shopping on AUREEVO. Please share the best price, EMI options, and delivery timeline.";
     const encoded = encodeURIComponent(text || defaultMsg);
     window.open(`https://wa.me/${phoneNumber}?text=${encoded}`, "_blank");
   };

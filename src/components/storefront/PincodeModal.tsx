@@ -48,7 +48,7 @@ export default function PincodeModal({ onClose }: PincodeModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
       <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-dropdown border border-slate-100 p-6">
         <button
           onClick={onClose}

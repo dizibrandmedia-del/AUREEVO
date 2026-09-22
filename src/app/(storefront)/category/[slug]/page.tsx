@@ -22,13 +22,60 @@ export default async function CategoryPage({
 }: CategoryPageProps) {
   const { slug } = params;
 
-  // Fetch Category
-  const category = await db.category.findUnique({
-    where: { slug },
+  // Slug alias mappings to support any colloquial, plural, or shorthand URL
+  const ALIAS_MAP: Record<string, { categorySlug: string; subSlug?: string }> = {
+    appliances: { categorySlug: "kitchen-appliances" },
+    kitchen: { categorySlug: "kitchen-appliances" },
+    "audio-video": { categorySlug: "electronics", subSlug: "soundbars-home-theatre" },
+    "smart-home": { categorySlug: "home-living", subSlug: "lighting-lamps" },
+    "personal-care": { categorySlug: "electronics" },
+    smartphones: { categorySlug: "electronics" },
+    laptops: { categorySlug: "electronics" },
+    "air-conditioners": { categorySlug: "ac-cooling", subSlug: "split-inverter-acs" },
+    refrigerators: { categorySlug: "refrigeration", subSlug: "double-door-refrigerators" },
+    televisions: { categorySlug: "electronics", subSlug: "led-smart-tvs" },
+    "smart-lighting": { categorySlug: "home-living", subSlug: "lighting-lamps" },
+    dishwashers: { categorySlug: "kitchen-appliances" },
+    "grooming-kits": { categorySlug: "electronics" },
+    "washing-machines": { categorySlug: "washing-cleaning", subSlug: "front-load-washing-machines" },
+  };
+
+  let targetCategorySlug = slug;
+  let activeSubSlug = searchParams.sub;
+
+  if (ALIAS_MAP[slug]) {
+    targetCategorySlug = ALIAS_MAP[slug].categorySlug;
+    if (!activeSubSlug && ALIAS_MAP[slug].subSlug) {
+      activeSubSlug = ALIAS_MAP[slug].subSlug;
+    }
+  }
+
+  // 1. Fetch Category by slug
+  let category = await db.category.findUnique({
+    where: { slug: targetCategorySlug },
     include: {
       subcategories: true,
     },
   });
+
+  // 2. If not found, check if slug is a direct Subcategory slug
+  if (!category) {
+    const subcategory = await db.subcategory.findUnique({
+      where: { slug },
+      include: {
+        category: {
+          include: {
+            subcategories: true,
+          },
+        },
+      },
+    });
+
+    if (subcategory) {
+      category = subcategory.category;
+      activeSubSlug = subcategory.slug;
+    }
+  }
 
   if (!category) {
     notFound();
@@ -40,8 +87,8 @@ export default async function CategoryPage({
     status: "PUBLISHED",
   };
 
-  if (searchParams.sub) {
-    where.subcategory = { slug: searchParams.sub };
+  if (activeSubSlug) {
+    where.subcategory = { slug: activeSubSlug };
   }
 
   if (searchParams.brand) {
@@ -59,7 +106,7 @@ export default async function CategoryPage({
   if (searchParams.sort === "price-desc") orderBy = { sellingPrice: "desc" };
   if (searchParams.sort === "discount") orderBy = { discountPercent: "desc" };
 
-  const products = await db.product.findMany({
+  let products = await db.product.findMany({
     where,
     include: {
       category: true,
@@ -71,6 +118,28 @@ export default async function CategoryPage({
     orderBy,
   });
 
+  // Fallback to category products if no specific subcategory product is seeded yet
+  let isFallbackNotice = false;
+  if (products.length === 0 && activeSubSlug) {
+    products = await db.product.findMany({
+      where: {
+        categoryId: category.id,
+        status: "PUBLISHED",
+      },
+      include: {
+        category: true,
+        subcategory: true,
+        brand: true,
+        images: { orderBy: { displayOrder: "asc" } },
+        attributes: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    if (products.length > 0) {
+      isFallbackNotice = true;
+    }
+  }
+
   const brands = await db.brand.findMany({
     where: { isActive: true },
   });
@@ -81,12 +150,14 @@ export default async function CategoryPage({
       <nav className="flex items-center gap-1.5 text-xs text-slate-500">
         <Link href="/" className="hover:text-brand-blue">Home</Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="font-semibold text-slate-900">{category.name}</span>
-        {searchParams.sub && (
+        <Link href={`/category/${targetCategorySlug}`} className="font-semibold text-slate-900 hover:text-brand-blue">
+          {category.name}
+        </Link>
+        {activeSubSlug && (
           <>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
             <span className="text-brand-blue font-medium">
-              {category.subcategories.find((s) => s.slug === searchParams.sub)?.name || searchParams.sub}
+              {category.subcategories.find((s) => s.slug === activeSubSlug)?.name || activeSubSlug}
             </span>
           </>
         )}
@@ -98,7 +169,11 @@ export default async function CategoryPage({
           <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">
             AUREVO Catalog
           </span>
-          <h1 className="text-2xl sm:text-4xl font-black">{category.name}</h1>
+          <h1 className="text-2xl sm:text-4xl font-black">
+            {activeSubSlug
+              ? category.subcategories.find((s) => s.slug === activeSubSlug)?.name || category.name
+              : category.name}
+          </h1>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
             {category.description ||
               `Explore the highest rated ${category.name.toLowerCase()} from top brands with certified manufacturer warranties, transparent pricing, and free doorstep delivery.`}
@@ -110,9 +185,9 @@ export default async function CategoryPage({
       {category.subcategories.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           <Link
-            href={`/category/${slug}`}
+            href={`/category/${targetCategorySlug}`}
             className={`px-4 py-2 rounded-xl text-xs font-bold shrink-0 transition ${
-              !searchParams.sub
+              !activeSubSlug
                 ? "bg-brand-blue text-white shadow-sm"
                 : "bg-white text-slate-700 border border-slate-200 hover:border-brand-blue"
             }`}
@@ -122,9 +197,9 @@ export default async function CategoryPage({
           {category.subcategories.map((sub) => (
             <Link
               key={sub.id}
-              href={`/category/${slug}?sub=${sub.slug}`}
+              href={`/category/${targetCategorySlug}?sub=${sub.slug}`}
               className={`px-4 py-2 rounded-xl text-xs font-bold shrink-0 transition ${
-                searchParams.sub === sub.slug
+                activeSubSlug === sub.slug
                   ? "bg-brand-blue text-white shadow-sm"
                   : "bg-white text-slate-700 border border-slate-200 hover:border-brand-blue"
               }`}
@@ -145,7 +220,7 @@ export default async function CategoryPage({
               Filters
             </h3>
             <Link
-              href={`/category/${slug}`}
+              href={`/category/${targetCategorySlug}`}
               className="text-xs text-brand-blue hover:underline font-semibold"
             >
               Clear All
@@ -159,25 +234,25 @@ export default async function CategoryPage({
             </h4>
             <div className="space-y-1.5 text-xs text-slate-600">
               <Link
-                href={`/category/${slug}?maxPrice=15000`}
+                href={`/category/${targetCategorySlug}?maxPrice=15000`}
                 className="block py-1 hover:text-brand-blue"
               >
                 Under ₹15,000
               </Link>
               <Link
-                href={`/category/${slug}?minPrice=15000&maxPrice=30000`}
+                href={`/category/${targetCategorySlug}?minPrice=15000&maxPrice=30000`}
                 className="block py-1 hover:text-brand-blue"
               >
                 ₹15,000 - ₹30,000
               </Link>
               <Link
-                href={`/category/${slug}?minPrice=30000&maxPrice=50000`}
+                href={`/category/${targetCategorySlug}?minPrice=30000&maxPrice=50000`}
                 className="block py-1 hover:text-brand-blue"
               >
                 ₹30,000 - ₹50,000
               </Link>
               <Link
-                href={`/category/${slug}?minPrice=50000`}
+                href={`/category/${targetCategorySlug}?minPrice=50000`}
                 className="block py-1 hover:text-brand-blue"
               >
                 ₹50,000 & Above
@@ -194,7 +269,7 @@ export default async function CategoryPage({
               {brands.map((b) => (
                 <Link
                   key={b.id}
-                  href={`/category/${slug}?brand=${b.slug}`}
+                  href={`/category/${targetCategorySlug}?brand=${b.slug}`}
                   className={`block py-1 hover:text-brand-blue ${
                     searchParams.brand === b.slug ? "font-bold text-brand-blue" : ""
                   }`}
@@ -218,6 +293,23 @@ export default async function CategoryPage({
 
         {/* Right Products Section */}
         <div className="lg:col-span-3 space-y-6">
+          {isFallbackNotice && (
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900 flex items-center justify-between gap-3">
+              <div>
+                <p className="font-bold">Showing curated items from {category.name}</p>
+                <p className="text-amber-700 mt-0.5">
+                  Exclusive premium stock for this specific collection is arriving shortly. Here are top-rated selections in this department.
+                </p>
+              </div>
+              <Link
+                href={`/category/${targetCategorySlug}`}
+                className="px-3 py-1.5 bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold rounded-xl shrink-0"
+              >
+                View All
+              </Link>
+            </div>
+          )}
+
           {/* Header Controls (Count + Sort) */}
           <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200">
             <span className="text-xs text-slate-600 font-medium">
@@ -228,19 +320,19 @@ export default async function CategoryPage({
             <div className="flex items-center gap-2 text-xs">
               <span className="text-slate-500 font-semibold">Sort By:</span>
               <Link
-                href={`/category/${slug}?sort=price-asc`}
+                href={`/category/${targetCategorySlug}?sort=price-asc`}
                 className="px-2.5 py-1 rounded-lg border border-slate-200 hover:border-brand-blue"
               >
                 Price: Low to High
               </Link>
               <Link
-                href={`/category/${slug}?sort=price-desc`}
+                href={`/category/${targetCategorySlug}?sort=price-desc`}
                 className="px-2.5 py-1 rounded-lg border border-slate-200 hover:border-brand-blue"
               >
                 Price: High to Low
               </Link>
               <Link
-                href={`/category/${slug}?sort=discount`}
+                href={`/category/${targetCategorySlug}?sort=discount`}
                 className="px-2.5 py-1 rounded-lg border border-slate-200 hover:border-brand-blue"
               >
                 Discount
@@ -253,7 +345,7 @@ export default async function CategoryPage({
             <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 space-y-3">
               <p className="text-sm font-semibold text-slate-700">No products match your current filters.</p>
               <Link
-                href={`/category/${slug}`}
+                href={`/category/${targetCategorySlug}`}
                 className="inline-block px-4 py-2 bg-brand-blue text-white rounded-xl text-xs font-bold"
               >
                 View All {category.name}

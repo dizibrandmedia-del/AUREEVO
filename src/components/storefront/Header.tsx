@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -23,6 +23,7 @@ import MegaMenu from "./MegaMenu";
 import PincodeModal from "./PincodeModal";
 import Logo from "@/components/common/Logo";
 import MobileDrawer from "./MobileDrawer";
+import MobileBottomNav from "./MobileBottomNav";
 
 export default function Header() {
   const router = useRouter();
@@ -32,6 +33,7 @@ export default function Header() {
   const [isPincodeOpen, setIsPincodeOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
+  const mobileSearchInputRef = useRef<HTMLInputElement>(null);
 
   const cartCount = useCartStore((s) => s.getItemCount());
   const wishlistCount = useWishlistStore((s) => s.items.length);
@@ -60,6 +62,13 @@ export default function Header() {
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
+  };
+
+  const handleFocusSearch = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => {
+      mobileSearchInputRef.current?.focus();
+    }, 120);
   };
 
   const switchRole = async (targetRole: string) => {
@@ -136,7 +145,7 @@ export default function Header() {
 
       {/* Main Sticky Header */}
       <header
-        className={`sticky top-0 z-50 bg-white/95 backdrop-blur-md transition-all duration-200 border-b border-brand-border/60 ${
+        className={`sticky top-0 z-40 bg-white/95 backdrop-blur-md transition-all duration-200 border-b border-brand-border/60 ${
           isScrolled ? "shadow-md py-2.5" : "py-3 shadow-sm"
         }`}
       >
@@ -348,6 +357,7 @@ export default function Header() {
           <div className="mt-3 md:hidden">
             <form onSubmit={handleSearchSubmit} className="relative">
               <input
+                ref={mobileSearchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -382,6 +392,12 @@ export default function Header() {
         onPincodeClick={() => setIsPincodeOpen(true)}
         currentPincode={currentPincode}
         switchRole={switchRole}
+      />
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav
+        onOpenCategories={() => setMobileMenuOpen(true)}
+        onFocusSearch={handleFocusSearch}
       />
     </>
   );

@@ -269,7 +269,7 @@ export default function MegaMenu() {
                 className="relative py-1.5"
               >
                 <Link
-                  href={cat.slug === "deals" ? "/deals" : `/category/${cat.slug}`}
+                  href={cat.slug === "deals" ? "/deals" : cat.slug === "wedding-packages" ? "/wedding-packages" : `/category/${cat.slug}`}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-medium ${
                     isHighlight
                       ? "text-brand-gold-light bg-brand-gold/15 hover:bg-brand-gold/25 font-bold border border-brand-gold/40 shadow-sm"

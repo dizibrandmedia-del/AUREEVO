@@ -14,21 +14,42 @@ import {
   Percent,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function SalesDashboardPage() {
-  const totalLeads = await db.lead.count();
-  const newLeads = await db.lead.count({ where: { status: "NEW" } });
-  const wonLeads = await db.lead.count({ where: { status: "WON" } });
-  const lostLeads = await db.lead.count({ where: { status: "LOST" } });
-  const inQuotation = await db.lead.count({ where: { status: "QUOTATION" } });
+  let totalLeads = 0;
+  let newLeads = 0;
+  let wonLeads = 0;
+  let lostLeads = 0;
+  let inQuotation = 0;
+  let quotations: any[] = [];
+  let recentLeads: any[] = [];
 
-  const quotations = await db.quotation.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  });
+  try {
+    totalLeads = await db.lead.count();
+    newLeads = await db.lead.count({ where: { status: "NEW" } });
+    wonLeads = await db.lead.count({ where: { status: "WON" } });
+    lostLeads = await db.lead.count({ where: { status: "LOST" } });
+    inQuotation = await db.lead.count({ where: { status: "QUOTATION" } });
 
-  const totalQuotedAmount = quotations.reduce((s, q) => s + q.totalAmount, 0);
+    quotations = await db.quotation.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    });
+
+    recentLeads = await db.lead.findMany({
+      include: {
+        assignedTo: { select: { name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    });
+  } catch (error) {
+    console.error("Database query fallback in SalesDashboardPage:", error);
+  }
+
+  const totalQuotedAmount = quotations.reduce((s, q) => s + (q.totalAmount ?? 0), 0);
 
   // Sales targets & conversion calculation
   const monthlyTarget = 1500000; // ₹15 Lakhs
@@ -37,14 +58,6 @@ export default async function SalesDashboardPage() {
   const estimatedCommission = Math.round((achievedSales * commissionRate) / 100);
   const conversionRate =
     totalLeads > 0 ? ((wonLeads / totalLeads) * 100).toFixed(1) : "0.0";
-
-  const recentLeads = await db.lead.findMany({
-    include: {
-      assignedTo: { select: { name: true } },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 6,
-  });
 
   return (
     <div className="space-y-8">

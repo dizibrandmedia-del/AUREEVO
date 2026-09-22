@@ -17,39 +17,50 @@ import {
 } from "lucide-react";
 import { calculateMargin } from "@/lib/margin";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0; // Fresh metrics
 
 export default async function AdminDashboardPage() {
-  const totalOrders = await db.order.count();
-  const pendingOrders = await db.order.count({ where: { orderStatus: "PENDING" } });
-  const totalProducts = await db.product.count();
-  const pendingApprovals = await db.product.count({
-    where: { status: { in: ["SUBMITTED", "UNDER_REVIEW"] } },
-  });
-  const totalSuppliers = await db.supplier.count();
-  const totalLeads = await db.lead.count();
+  let totalOrders = 0;
+  let pendingOrders = 0;
+  let totalProducts = 0;
+  let pendingApprovals = 0;
+  let totalSuppliers = 0;
+  let totalLeads = 0;
+  let orders: any[] = [];
+  let products: any[] = [];
 
-  // Aggregate Revenue
-  const orders = await db.order.findMany({
-    include: { items: true },
-    orderBy: { createdAt: "desc" },
-    take: 10,
-  });
+  try {
+    totalOrders = await db.order.count();
+    pendingOrders = await db.order.count({ where: { orderStatus: "PENDING" } });
+    totalProducts = await db.product.count();
+    pendingApprovals = await db.product.count({
+      where: { status: { in: ["SUBMITTED", "UNDER_REVIEW"] } },
+    });
+    totalSuppliers = await db.supplier.count();
+    totalLeads = await db.lead.count();
 
-  const totalRevenue = orders.reduce((s, o) => s + o.grandTotal, 0);
+    orders = await db.order.findMany({
+      include: { items: true },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+    });
 
-  // Compute live Gross & Net margins across products
-  const products = await db.product.findMany({
-    select: {
-      id: true,
-      name: true,
-      sku: true,
-      sellingPrice: true,
-      purchasePrice: true,
-      stock: true,
-    },
-  });
+    products = await db.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        sku: true,
+        sellingPrice: true,
+        purchasePrice: true,
+        stock: true,
+      },
+    });
+  } catch (error) {
+    console.error("Database query fallback in AdminDashboardPage:", error);
+  }
 
+  const totalRevenue = orders.reduce((s, o) => s + (o.grandTotal ?? 0), 0);
   let totalSellingValue = 0;
   let totalPurchaseCost = 0;
   let criticalMarginAlerts: any[] = [];

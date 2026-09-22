@@ -20,47 +20,56 @@ import ProductCard from "@/components/storefront/ProductCard";
 export const revalidate = 60; // ISR cache revalidation every minute
 
 export default async function HomePage() {
-  // Fetch real data from SQLite/Postgres database
-  const categories = await db.category.findMany({
-    where: { isActive: true },
-    include: { subcategories: true, _count: { select: { products: true } } },
-    orderBy: { displayOrder: "asc" },
-  });
+  // Resiliently fetch real data from SQLite/Postgres database
+  let categories: any[] = [];
+  let products: any[] = [];
+  let brands: any[] = [];
+  let weddingPackages: any[] = [];
 
-  const products = await db.product.findMany({
-    where: { status: "PUBLISHED" },
-    include: {
-      category: true,
-      subcategory: true,
-      brand: true,
-      images: { orderBy: { displayOrder: "asc" } },
-      attributes: true,
-    },
-    orderBy: { createdAt: "desc" },
-    take: 24,
-  });
+  try {
+    categories = await db.category.findMany({
+      where: { isActive: true },
+      include: { subcategories: true, _count: { select: { products: true } } },
+      orderBy: { displayOrder: "asc" },
+    });
 
-  const brands = await db.brand.findMany({
-    where: { isActive: true },
-    orderBy: { name: "asc" },
-  });
+    products = await db.product.findMany({
+      where: { status: "PUBLISHED" },
+      include: {
+        category: true,
+        subcategory: true,
+        brand: true,
+        images: { orderBy: { displayOrder: "asc" } },
+        attributes: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 24,
+    });
 
-  const weddingPackages = await db.weddingPackage.findMany({
-    where: { isActive: true },
-    orderBy: { packagePrice: "asc" },
-  });
+    brands = await db.brand.findMany({
+      where: { isActive: true },
+      orderBy: { name: "asc" },
+    });
 
-  // Filter products by PRD sections
-  const bestDeals = products.filter((p) => p.discountPercent >= 25);
+    weddingPackages = await db.weddingPackage.findMany({
+      where: { isActive: true },
+      orderBy: { packagePrice: "asc" },
+    });
+  } catch (error) {
+    console.error("Database query fallback in HomePage:", error);
+  }
+
+  // Filter products by PRD sections safely
+  const bestDeals = products.filter((p) => (p.discountPercent ?? 0) >= 25);
   const trendingProducts = products.filter((p) => p.isTrending || p.isFeatured);
   const bestSellers = products.filter((p) => p.isBestSeller);
-  const electronicsProducts = products.filter((p) => p.category.slug === "electronics");
+  const electronicsProducts = products.filter((p) => p.category?.slug === "electronics");
   const applianceProducts = products.filter((p) =>
     ["ac-cooling", "refrigeration", "washing-cleaning", "kitchen-appliances"].includes(
-      p.category.slug
+      p.category?.slug || ""
     )
   );
-  const furnitureProducts = products.filter((p) => p.category.slug === "furniture");
+  const furnitureProducts = products.filter((p) => p.category?.slug === "furniture");
 
   return (
     <div className="space-y-16 pb-12">

@@ -16,10 +16,12 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/db";
 import ProductCard from "@/components/storefront/ProductCard";
+import KashikaHeroSlider from "@/components/storefront/KashikaHeroSlider";
 import {
   CategoryStoryCircles,
   CategoryBannerGrid,
   TrustFeaturesBar,
+  BrandPartnersBar,
 } from "@/components/storefront/KashikaRetailSections";
 
 export const revalidate = 60; // ISR cache revalidation every minute
@@ -77,110 +79,14 @@ export default async function HomePage() {
   const furnitureProducts = products.filter((p) => p.category?.slug === "furniture");
 
   return (
-    <div className="space-y-10 sm:space-y-14 pb-12">
+    <div className="space-y-8 sm:space-y-12 pb-12">
       {/* 1. KASHIKA-STYLE TOP CATEGORY STORY CIRCLES */}
       <CategoryStoryCircles />
 
-      {/* 2. HERO SECTION */}
-      <section className="relative overflow-hidden bg-brand-dark text-white pt-8 pb-14 lg:py-20 border-b border-brand-gold/20">
-        {/* Glow backdrop effects */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[480px] h-[480px] rounded-full bg-brand-gold/15 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[480px] h-[480px] rounded-full bg-brand-emerald/30 blur-3xl pointer-events-none" />
+      {/* 2. KASHIKA EXACT HERO CAROUSEL SLIDER */}
+      <KashikaHeroSlider />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            {/* Left Hero Content */}
-            <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-gold/15 border border-brand-gold/35 text-xs font-semibold text-brand-gold-light shadow-sm">
-                <Sparkles className="w-3.5 h-3.5 text-brand-gold" />
-                <span className="font-luxury tracking-wider uppercase text-[11px]">The World of Luxury • Curated Living</span>
-              </div>
-
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
-                Smart Shopping. <br />
-                <span className="gold-text-gradient font-luxury">
-                  The World of Luxury.
-                </span>
-              </h1>
-
-              <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
-                Elevate your home with royal refinement. Genuine 4K OLED TVs, Inverter ACs, French Door Refrigerators, Teakwood Furniture, and All-in-One Wedding Package suites with transparent pricing and white-glove professional installation.
-              </p>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-3.5 pt-2">
-                <Link
-                  href="/category/electronics"
-                  className="px-7 py-3.5 rounded-2xl bg-gold-gradient hover:bg-gold-gradient-hover text-brand-dark font-black text-sm tracking-wider uppercase font-luxury shadow-lg hover:shadow-gold-glow transition flex items-center gap-2 group"
-                >
-                  EXPLORE COLLECTION
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-
-                <Link
-                  href="/wedding-packages"
-                  className="px-7 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-brand-gold/40 text-brand-gold-light font-bold text-sm transition flex items-center gap-2"
-                >
-                  <Sparkles className="w-4 h-4 text-brand-gold" />
-                  ROYAL WEDDING SUITES
-                </Link>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-brand-gold/15 text-xs text-slate-300">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-brand-gold" />
-                  <span className="font-medium">100% Brand Warranty</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-brand-gold" />
-                  <span className="font-medium">White Glove Delivery</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Wrench className="w-4 h-4 text-brand-gold" />
-                  <span className="font-medium">Free Installation</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Hero Visual Banner */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-brand-gold/30 bg-brand-emerald/40 p-5 group">
-                <div className="aspect-[4/3] rounded-2xl overflow-hidden relative border border-brand-gold/20">
-                  <img
-                    src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=1000&auto=format&fit=crop&q=80"
-                    alt="Smart Home Electronics"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-transparent opacity-85" />
-                  <div className="absolute bottom-4 left-4 right-4 p-3.5 bg-brand-dark/90 backdrop-blur-md rounded-2xl border border-brand-gold/30 flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] text-brand-gold-light font-bold uppercase tracking-widest font-luxury">
-                        Exclusive Edition
-                      </span>
-                      <h4 className="text-xs sm:text-sm font-bold text-white">
-                        Samsung 55" Crystal 4K UHD
-                      </h4>
-                      <p className="text-xs text-slate-300 mt-0.5">
-                        <strong className="text-brand-gold-light">₹42,990</strong>{" "}
-                        <span className="line-through text-slate-500 text-[11px]">₹64,900</span>
-                      </p>
-                    </div>
-                    <Link
-                      href="/category/electronics"
-                      className="px-3.5 py-1.5 bg-gold-gradient hover:bg-gold-gradient-hover text-brand-dark rounded-xl text-xs font-black tracking-wider uppercase font-luxury transition shadow-sm"
-                    >
-                      VIEW
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. KASHIKA-INSPIRED 2x4 VISUAL CATEGORY BANNER GRID */}
+      {/* 3. KASHIKA-INSPIRED 2x4 VISUAL CATEGORY BANNER GRID (450x250) */}
       <CategoryBannerGrid />
 
       {/* 4. BEST DEALS (Countdown + Savings) */}
@@ -511,6 +417,9 @@ export default async function HomePage() {
 
       {/* 16.5 KASHIKA TRUST & VALUE ASSURANCE BAR */}
       <TrustFeaturesBar />
+
+      {/* 16.6 KASHIKA BRAND PARTNERS BAR */}
+      <BrandPartnersBar />
 
       {/* 17. B2B / BULK PURCHASE CALLOUT */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

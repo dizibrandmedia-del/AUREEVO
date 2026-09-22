@@ -2,134 +2,154 @@
 
 import React from "react";
 import Link from "next/link";
-import {
-  Truck,
-  RotateCcw,
-  Headphones,
-  ShieldCheck,
-  Sparkles,
-  ArrowRight,
-  Flame,
-} from "lucide-react";
+import { ArrowRight, Flame } from "lucide-react";
 
-// Category Story Circles Data (Horizontal scroll on mobile)
+// 1. Exact Category Story Circles
 const STORY_CATEGORIES = [
   {
-    name: "Televisions",
+    name: "TV & Entertainment",
     href: "/category/electronics?sub=led-smart-tvs",
-    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&auto=format&fit=crop&q=80",
+    image: "/images/kashika/cat-tv.jpg",
     badge: "Smart 4K",
-  },
-  {
-    name: "Air Conditioners",
-    href: "/category/ac-cooling?sub=split-inverter-acs",
-    image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=300&auto=format&fit=crop&q=80",
-    badge: "Inverter",
-  },
-  {
-    name: "Refrigerators",
-    href: "/category/refrigeration",
-    image: "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=300&auto=format&fit=crop&q=80",
-    badge: "Frost Free",
   },
   {
     name: "Washing Machines",
     href: "/category/washing-cleaning",
-    image: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=300&auto=format&fit=crop&q=80",
+    image: "/images/kashika/cat-washing.jpg",
     badge: "Front Load",
   },
   {
-    name: "Kitchen Luxury",
+    name: "Kitchen Appliances",
     href: "/category/kitchen-appliances",
-    image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=300&auto=format&fit=crop&q=80",
-    badge: "OTG & Hob",
+    image: "/images/kashika/cat-kitchen.jpg",
+    badge: "Chimneys & OTG",
   },
   {
-    name: "Soundbars & Audio",
-    href: "/category/electronics?sub=soundbars-home-theatre",
-    image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=300&auto=format&fit=crop&q=80",
-    badge: "Dolby Atmos",
+    name: "Laptop & Tech",
+    href: "/category/electronics",
+    image: "/images/kashika/cat-laptop.jpg",
+    badge: "Printers",
+  },
+  {
+    name: "Personal Care",
+    href: "/category/electronics",
+    image: "/images/kashika/cat-care.jpg",
+    badge: "Grooming",
   },
   {
     name: "Furniture Suites",
     href: "/category/furniture",
-    image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&auto=format&fit=crop&q=80",
+    image: "/images/kashika/cat-furniture.jpg",
     badge: "Teakwood",
+  },
+  {
+    name: "Accessories & Audio",
+    href: "/category/electronics?sub=soundbars-home-theatre",
+    image: "/images/kashika/cat-accessories.png",
+    badge: "Dolby Bass",
   },
   {
     name: "Wedding Suites",
     href: "/wedding-packages",
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=300&auto=format&fit=crop&q=80",
+    image: "/images/kashika/slider-5.png",
     badge: "Royal Bundle",
   },
   {
-    name: "Festive Deals",
+    name: "Festive Offers",
     href: "/deals",
-    image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=300&auto=format&fit=crop&q=80",
+    image: "/images/kashika/slider-1.jpg",
     badge: "Up to 55%",
   },
 ];
 
-// 2x4 Kashika Visual Category Banner Grid
-const BANNER_CATEGORIES = [
+// 2. Exact 8 Kashika Category Banners (450x250 aspect ratio)
+const KASHIKA_BANNERS = [
   {
     title: "Televisions",
-    subtitle: "OLED, QLED & 4K Smart TVs",
-    tag: "Up to 50% Off",
-    href: "/category/electronics",
-    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&auto=format&fit=crop&q=80",
+    href: "/category/electronics?sub=led-smart-tvs",
+    image: "/images/kashika/banner-televisions.jpg",
+    tag: "Smart LED & OLED",
   },
   {
-    title: "Air Conditioners",
-    subtitle: "Split & Window Inverter ACs",
-    tag: "Free Installation",
+    title: "Air Conditioner",
     href: "/category/ac-cooling",
-    image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&auto=format&fit=crop&q=80",
+    image: "/images/kashika/banner-ac.jpg",
+    tag: "Split & Window Inverter",
   },
   {
-    title: "Refrigerators",
-    subtitle: "Side-by-Side & Double Door",
-    tag: "Exchange Bonus",
-    href: "/category/refrigeration",
-    image: "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=600&auto=format&fit=crop&q=80",
-  },
-  {
-    title: "Washing Machines",
-    subtitle: "Front & Top Load Inverters",
-    tag: "10Y Motor Warranty",
+    title: "Home Appliances",
     href: "/category/washing-cleaning",
-    image: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&auto=format&fit=crop&q=80",
+    image: "/images/kashika/banner-appliances.jpg",
+    tag: "Refrigerators & Washers",
+  },
+  {
+    title: "Water Purifier",
+    href: "/category/kitchen-appliances",
+    image: "/images/kashika/banner-waterpurifier.jpg",
+    tag: "RO & UV Purifiers",
   },
   {
     title: "Kitchen Appliances",
-    subtitle: "Microwaves, Chimneys & Hobs",
-    tag: "Chef Grade",
     href: "/category/kitchen-appliances",
-    image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=600&auto=format&fit=crop&q=80",
+    image: "/images/kashika/banner-kitchen.jpg",
+    tag: "Hobs, Chimneys & Microwaves",
   },
   {
-    title: "Audio & Entertainment",
-    subtitle: "Soundbars, Theatres & Speakers",
-    tag: "Cinematic Bass",
-    href: "/category/electronics?sub=soundbars-home-theatre",
-    image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=600&auto=format&fit=crop&q=80",
+    title: "Laptop & Printer",
+    href: "/category/electronics",
+    image: "/images/kashika/banner-laptop.jpg",
+    tag: "Computing & Office",
   },
   {
-    title: "Living & Furniture",
-    subtitle: "King Beds, Sofas & Dining Sets",
-    tag: "Solid Wood",
+    title: "Furniture",
     href: "/category/furniture",
-    image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&auto=format&fit=crop&q=80",
+    image: "/images/kashika/banner-furniture.jpg",
+    tag: "Beds, Sofas & Dining Sets",
   },
   {
-    title: "Wedding Packages",
-    subtitle: "All-in-One Home Electronic Suites",
-    tag: "Save ₹1,50,000+",
-    href: "/wedding-packages",
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop&q=80",
+    title: "Mobile & Tablets",
+    href: "/category/electronics",
+    image: "/images/kashika/banner-mobile.jpg",
+    tag: "5G Smartphones & Audio",
   },
 ];
 
+// 3. Exact 4 Kashika Trust Features
+const TRUST_FEATURES = [
+  {
+    title: "Free Shipping",
+    subtitle: "On all orders across Varanasi & Purvanchal",
+    icon: "/images/kashika/trust-shipping.png",
+  },
+  {
+    title: "Free Returns",
+    subtitle: "Returns are free within 7 days",
+    icon: "/images/kashika/trust-returns.png",
+  },
+  {
+    title: "Support 24/7",
+    subtitle: "Helpline: 98390 57744 & WhatsApp Desk",
+    icon: "/images/kashika/trust-support.png",
+  },
+  {
+    title: "100% Payment Secure",
+    subtitle: "Your payments are safe with GST billing",
+    icon: "/images/kashika/trust-secure.png",
+  },
+];
+
+// 4. Exact Kashika Brand Logos
+const BRAND_LOGOS = [
+  "/images/kashika/brand-1.jpg",
+  "/images/kashika/brand-2.jpg",
+  "/images/kashika/brand-3.jpg",
+  "/images/kashika/brand-4.jpg",
+  "/images/kashika/brand-5.jpg",
+  "/images/kashika/brand-1.jpg",
+  "/images/kashika/brand-2.jpg",
+];
+
+// A. Top Category Story Circles (horizontal swipe on mobile)
 export function CategoryStoryCircles() {
   return (
     <section className="bg-white border-b border-brand-border/60 py-3 sm:py-4 shadow-2xs">
@@ -156,10 +176,10 @@ export function CategoryStoryCircles() {
             <Link
               key={idx}
               href={cat.href}
-              className="flex flex-col items-center gap-1 shrink-0 group w-16 sm:w-20 text-center"
+              className="flex flex-col items-center gap-1 shrink-0 group w-18 sm:w-22 text-center"
             >
-              {/* Circular Thumbnail with Gradient Ring */}
-              <div className="relative w-15 h-15 sm:w-20 sm:h-20 rounded-full p-[2px] sm:p-[2.5px] bg-gradient-to-tr from-brand-gold-light via-brand-gold to-brand-emerald group-hover:scale-105 transition-transform duration-300 shadow-sm">
+              {/* Circular Thumbnail with Gold/Emerald Border */}
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full p-[2px] sm:p-[2.5px] bg-gradient-to-tr from-brand-gold via-brand-gold-light to-brand-emerald group-hover:scale-105 transition-transform duration-300 shadow-sm">
                 <div className="w-full h-full rounded-full overflow-hidden bg-white border-2 border-white">
                   <img
                     src={cat.image}
@@ -174,7 +194,7 @@ export function CategoryStoryCircles() {
                   </span>
                 )}
               </div>
-              <span className="text-[10px] sm:text-xs font-bold text-slate-800 group-hover:text-brand-gold-dark transition line-clamp-1 mt-0.5">
+              <span className="text-[10px] sm:text-xs font-bold text-slate-800 group-hover:text-brand-gold-dark transition line-clamp-1 mt-1">
                 {cat.name}
               </span>
             </Link>
@@ -185,6 +205,7 @@ export function CategoryStoryCircles() {
   );
 }
 
+// B. Exact 2x4 Kashika Category Banners (450x250)
 export function CategoryBannerGrid() {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -201,114 +222,90 @@ export function CategoryBannerGrid() {
           href="/category/electronics"
           className="hidden sm:flex items-center gap-1 text-xs font-bold text-brand-emerald hover:text-brand-dark"
         >
-          All Products <ArrowRight className="w-3.5 h-3.5" />
+          All Departments <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
 
-      {/* 2 Columns on Mobile, 4 Columns on Desktop */}
+      {/* Kashika Layout: col-6 on mobile (2 columns), col-lg-3 on desktop (4 columns) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-        {BANNER_CATEGORIES.map((banner, idx) => (
-          <Link
-            key={idx}
-            href={banner.href}
-            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-brand-border/70 hover:border-brand-gold/60 transition-all duration-300 aspect-[4/3] flex flex-col justify-end p-3 sm:p-4 bg-slate-900"
-          >
-            {/* Background Image with Zoom */}
-            <img
-              src={banner.image}
-              alt={banner.title}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80 group-hover:opacity-90"
-              loading="lazy"
-            />
+        {KASHIKA_BANNERS.map((banner, idx) => (
+          <div key={idx} className="banner-wrapper group relative rounded-xl sm:rounded-2xl overflow-hidden shadow-xs hover:shadow-lg border border-slate-200 transition-all duration-300 bg-white">
+            <Link href={banner.href} className="block relative overflow-hidden aspect-[450/250]">
+              {/* Exact 450x250 Kashika Banner Image */}
+              <img
+                src={banner.image}
+                alt={banner.title}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+              />
 
-            {/* Dark Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-
-            {/* Banner Top Badge */}
-            <span className="absolute top-2.5 left-2.5 bg-brand-gold text-brand-dark text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm font-luxury">
-              {banner.tag}
-            </span>
-
-            {/* Banner Title & Subtitle */}
-            <div className="relative z-10 space-y-0.5">
-              <h3 className="text-white text-xs sm:text-base font-black tracking-tight group-hover:text-brand-gold-light transition">
-                {banner.title}
-              </h3>
-              <p className="text-[10px] sm:text-xs text-slate-300 line-clamp-1">
-                {banner.subtitle}
-              </p>
-            </div>
-          </Link>
+              {/* Exact Kashika banner-catergory overlay bar at bottom */}
+              <div className="absolute bottom-0 inset-x-0 min-h-[35px] sm:min-h-[40px] bg-[rgb(228_25_55_/_88%)] group-hover:bg-[rgb(200_15_42_/_95%)] text-white text-xs sm:text-sm font-bold flex items-center justify-center text-center px-2 py-1 transition-colors duration-200 tracking-wide font-luxury">
+                <span>{banner.title}</span>
+              </div>
+            </Link>
+          </div>
         ))}
       </div>
     </section>
   );
 }
 
+// C. Exact Kashika Static Trust / Assurance Bar (static-area)
 export function TrustFeaturesBar() {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="bg-white rounded-3xl border border-brand-border/80 p-5 sm:p-8 shadow-sm">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 divide-y-2 sm:divide-y-0 sm:divide-x divide-slate-100">
-          {/* Feature 1 */}
-          <div className="flex items-center gap-3 sm:gap-4 pt-3 sm:pt-0 sm:px-3">
-            <div className="w-11 h-11 rounded-2xl bg-brand-gold/15 text-brand-gold-dark flex items-center justify-center shrink-0 shadow-sm border border-brand-gold/30">
-              <Truck className="w-5 h-5 text-brand-gold-dark" />
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-7 shadow-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+          {TRUST_FEATURES.map((item, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-3.5 pt-3 sm:pt-0 sm:px-3 first:pt-0"
+            >
+              {/* Exact Kashika 35px PNG icon */}
+              <img
+                src={item.icon}
+                alt={item.title}
+                className="w-[35px] h-[35px] object-contain shrink-0"
+                loading="lazy"
+              />
+              <div className="single-static-meta">
+                <h4 className="font-bold text-slate-900 text-sm sm:text-base leading-tight">
+                  {item.title}
+                </h4>
+                <p className="text-xs text-slate-500 mt-0.5 leading-snug">
+                  {item.subtitle}
+                </p>
+              </div>
             </div>
-            <div>
-              <h4 className="font-black text-xs sm:text-sm text-slate-900 font-luxury">
-                Free Delivery
-              </h4>
-              <p className="text-[10px] sm:text-xs text-slate-500">
-                White glove delivery across Varanasi & Purvanchal
-              </p>
-            </div>
-          </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
-          {/* Feature 2 */}
-          <div className="flex items-center gap-3 sm:gap-4 pt-3 sm:pt-0 sm:px-3">
-            <div className="w-11 h-11 rounded-2xl bg-brand-emerald/15 text-brand-emerald flex items-center justify-center shrink-0 shadow-sm border border-brand-emerald/30">
-              <RotateCcw className="w-5 h-5 text-brand-emerald" />
+// D. Kashika Brand Partners Slider
+export function BrandPartnersBar() {
+  return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-xs">
+        <div className="text-center mb-3">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400 font-luxury">
+            Authorized Brand Partners
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-none py-2">
+          {BRAND_LOGOS.map((logo, idx) => (
+            <div key={idx} className="shrink-0 grayscale hover:grayscale-0 transition opacity-80 hover:opacity-100">
+              <img
+                src={logo}
+                alt="Brand Partner"
+                className="h-10 sm:h-12 w-auto object-contain"
+                loading="lazy"
+              />
             </div>
-            <div>
-              <h4 className="font-black text-xs sm:text-sm text-slate-900 font-luxury">
-                Easy Returns
-              </h4>
-              <p className="text-[10px] sm:text-xs text-slate-500">
-                7-Day brand-certified replacement guarantee
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="flex items-center gap-3 sm:gap-4 pt-3 sm:pt-0 sm:px-3">
-            <div className="w-11 h-11 rounded-2xl bg-blue-50 text-brand-blue flex items-center justify-center shrink-0 shadow-sm border border-blue-200">
-              <Headphones className="w-5 h-5 text-brand-blue" />
-            </div>
-            <div>
-              <h4 className="font-black text-xs sm:text-sm text-slate-900 font-luxury">
-                24/7 Support
-              </h4>
-              <p className="text-[10px] sm:text-xs text-slate-500">
-                Helpline: 98390 57744 &amp; WhatsApp Desk
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 4 */}
-          <div className="flex items-center gap-3 sm:gap-4 pt-3 sm:pt-0 sm:px-3">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 shadow-sm border border-emerald-200">
-              <ShieldCheck className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div>
-              <h4 className="font-black text-xs sm:text-sm text-slate-900 font-luxury">
-                100% Secure
-              </h4>
-              <p className="text-[10px] sm:text-xs text-slate-500">
-                Official GST billing &amp; company warranty
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
@@ -321,6 +318,7 @@ export default function KashikaRetailSections() {
       <CategoryStoryCircles />
       <CategoryBannerGrid />
       <TrustFeaturesBar />
+      <BrandPartnersBar />
     </div>
   );
 }

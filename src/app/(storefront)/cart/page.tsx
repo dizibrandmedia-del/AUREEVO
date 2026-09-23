@@ -16,7 +16,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import { useCartStore } from "@/lib/store";
+import { useCartStore } from "../../../lib/store";
 
 export default function CartPage() {
   const router = useRouter();

@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useCompareStore, useCartStore } from "@/lib/store";
+import { useCompareStore, useCartStore } from "../../../lib/store";
 import {
   Layers,
   X,

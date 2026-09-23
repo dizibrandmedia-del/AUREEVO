@@ -17,7 +17,7 @@ import {
   Plus,
   CheckCircle2,
 } from "lucide-react";
-import { generateInvoicePdf } from "@/lib/invoice";
+import { generateInvoicePdf } from "../../../lib/invoice";
 
 export default function CustomerAccountPage() {
   const [activeTab, setActiveTab] = useState<"ORDERS" | "WARRANTY" | "ADDRESSES" | "COUPONS">("ORDERS");

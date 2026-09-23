@@ -14,7 +14,7 @@ import {
   ArrowRight,
   AlertCircle,
 } from "lucide-react";
-import { useCartStore } from "@/lib/store";
+import { useCartStore } from "../../../lib/store";
 
 export default function CheckoutPage() {
   const router = useRouter();

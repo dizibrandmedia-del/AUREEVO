@@ -18,7 +18,7 @@ import {
   LogIn,
   Sparkles,
 } from "lucide-react";
-import Logo from "@/components/common/Logo";
+import Logo from "../../../components/common/Logo";
 
 export default function LoginPage() {
   const router = useRouter();

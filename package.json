@@ -10,7 +10,9 @@
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
-    "db:seed": "node prisma/seed.js"
+    "db:seed": "node prisma/seed.js",
+    "db:backup": "node scripts/backup-db.js",
+    "db:sync": "node scripts/sync-to-turso.js"
   },
   "dependencies": {
     "@libsql/client": "^0.8.0",

@@ -379,6 +379,7 @@ export default function MegaMenu({ initialCategories }: { initialCategories?: an
                 className="relative py-1.5"
               >
                 <Link
+                  prefetch={true}
                   href={cat.slug === "deals" ? "/deals" : cat.slug === "wedding-packages" ? "/wedding-packages" : `/category/${cat.slug}`}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-medium ${
                     isHighlight
@@ -407,6 +408,7 @@ export default function MegaMenu({ initialCategories }: { initialCategories?: an
                           {col.items.map((item, itemIdx) => (
                             <li key={itemIdx}>
                               <Link
+                                prefetch={true}
                                 href={item.href}
                                 className="text-slate-300 hover:text-brand-gold-light text-xs block py-0.5 transition font-medium hover:translate-x-1"
                               >

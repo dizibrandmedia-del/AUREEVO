@@ -5,6 +5,12 @@ import { db } from "@/lib/db";
 import ProductCard from "@/components/storefront/ProductCard";
 import { Filter, SlidersHorizontal, ChevronRight, HelpCircle } from "lucide-react";
 
+import {
+  getCachedCategoryWithSubs,
+  getCachedCategoryProducts,
+  getCachedBrands,
+} from "@/lib/cache";
+
 interface CategoryPageProps {
   params: { slug: string };
   searchParams: {
@@ -52,35 +58,15 @@ export default async function CategoryPage({
     }
   }
 
-  // 1. Fetch Category by slug
-  let category = await db.category.findUnique({
-    where: { slug: targetCategorySlug },
-    include: {
-      subcategories: true,
-    },
-  });
-
-  // 2. If not found, check if slug is a direct Subcategory slug
-  if (!category) {
-    const subcategory = await db.subcategory.findUnique({
-      where: { slug },
-      include: {
-        category: {
-          include: {
-            subcategories: true,
-          },
-        },
-      },
-    });
-
-    if (subcategory) {
-      category = subcategory.category;
-      activeSubSlug = subcategory.slug;
-    }
+  // 1. Fetch Category by slug from memory cache
+  const catResult = await getCachedCategoryWithSubs(targetCategorySlug);
+  if (!catResult || !catResult.category) {
+    notFound();
   }
 
-  if (!category) {
-    notFound();
+  const category = catResult.category;
+  if (!activeSubSlug && catResult.activeSubSlug) {
+    activeSubSlug = catResult.activeSubSlug;
   }
 
   // Build query filter
@@ -108,43 +94,26 @@ export default async function CategoryPage({
   if (searchParams.sort === "price-desc") orderBy = { sellingPrice: "desc" };
   if (searchParams.sort === "discount") orderBy = { discountPercent: "desc" };
 
-  let products = await db.product.findMany({
-    where,
-    include: {
-      category: true,
-      subcategory: true,
-      brand: true,
-      images: { orderBy: { displayOrder: "asc" } },
-      attributes: true,
-    },
-    orderBy,
-  });
+  // Fetch products and brands concurrently
+  const [prods, allBrands] = await Promise.all([
+    getCachedCategoryProducts(where, orderBy),
+    getCachedBrands(),
+  ]);
+
+  let products = prods || [];
+  const brands = allBrands || [];
 
   // Fallback to category products if no specific subcategory product is seeded yet
   let isFallbackNotice = false;
   if (products.length === 0 && activeSubSlug) {
-    products = await db.product.findMany({
-      where: {
-        categoryId: category.id,
-        status: "PUBLISHED",
-      },
-      include: {
-        category: true,
-        subcategory: true,
-        brand: true,
-        images: { orderBy: { displayOrder: "asc" } },
-        attributes: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    products = await getCachedCategoryProducts(
+      { categoryId: category.id, status: "PUBLISHED" },
+      { createdAt: "desc" }
+    );
     if (products.length > 0) {
       isFallbackNotice = true;
     }
   }
-
-  const brands = await db.brand.findMany({
-    where: { isActive: true },
-  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

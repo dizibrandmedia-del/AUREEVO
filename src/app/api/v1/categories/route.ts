@@ -2,17 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import { getCachedCategories, invalidateCatalogCache } from "@/lib/cache";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const includeAll = searchParams.get("all") === "true";
 
+    if (!includeAll) {
+      const categories = await getCachedCategories();
+      return NextResponse.json({ success: true, categories });
+    }
+
     const categories = await db.category.findMany({
-      where: includeAll ? {} : { isActive: true },
+      where: {},
       include: {
         subcategories: {
-          where: includeAll ? {} : { isActive: true },
           orderBy: { displayOrder: "asc" },
         },
         marginRule: true,
@@ -102,6 +107,7 @@ export async function POST(req: NextRequest) {
     });
 
     try {
+      invalidateCatalogCache();
       revalidatePath("/", "layout");
       revalidatePath("/admin/catalog/categories");
     } catch (e) {}
@@ -153,6 +159,12 @@ export async function PUT(req: NextRequest) {
         },
       });
 
+      try {
+        invalidateCatalogCache();
+        revalidatePath("/", "layout");
+        revalidatePath("/admin/catalog/categories");
+      } catch (e) {}
+
       return NextResponse.json({ success: true, subcategory: updatedSub });
     }
 
@@ -188,6 +200,7 @@ export async function PUT(req: NextRequest) {
     }
 
     try {
+      invalidateCatalogCache();
       revalidatePath("/", "layout");
       revalidatePath("/admin/catalog/categories");
     } catch (e) {}
@@ -225,6 +238,13 @@ export async function DELETE(req: NextRequest) {
       }
 
       await db.subcategory.delete({ where: { id } });
+
+      try {
+        invalidateCatalogCache();
+        revalidatePath("/", "layout");
+        revalidatePath("/admin/catalog/categories");
+      } catch (e) {}
+
       return NextResponse.json({ success: true, message: "Subcategory deleted successfully" });
     }
 
@@ -240,6 +260,7 @@ export async function DELETE(req: NextRequest) {
     await db.category.delete({ where: { id } });
 
     try {
+      invalidateCatalogCache();
       revalidatePath("/", "layout");
       revalidatePath("/admin/catalog/categories");
     } catch (e) {}

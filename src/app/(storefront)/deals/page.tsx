@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { db } from "@/lib/db";
+import { getCachedDeals } from "@/lib/cache";
 import ProductCard from "@/components/storefront/ProductCard";
 import { Flame, Sparkles, Percent, Tag, ShieldCheck, ChevronRight } from "lucide-react";
 
@@ -9,21 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function DealsPage() {
   let products: any[] = [];
   try {
-    products = await db.product.findMany({
-      where: {
-        status: "PUBLISHED",
-        discountPercent: { gte: 15 },
-      },
-      include: {
-        category: true,
-        subcategory: true,
-        brand: true,
-        images: { orderBy: { displayOrder: "asc" } },
-        attributes: true,
-      },
-      orderBy: { discountPercent: "desc" },
-      take: 40,
-    });
+    products = (await getCachedDeals()) || [];
   } catch (err) {
     console.error("Failed to load deals:", err);
   }

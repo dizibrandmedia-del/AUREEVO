@@ -223,6 +223,7 @@ export function CategoryStoryCircles({ categories }: { categories?: any[] }) {
             </h2>
           </div>
           <Link
+            prefetch={true}
             href="/deals"
             className="text-[11px] text-brand-emerald hover:text-brand-dark font-bold flex items-center gap-1"
           >
@@ -235,6 +236,7 @@ export function CategoryStoryCircles({ categories }: { categories?: any[] }) {
         <div className="flex items-start gap-3.5 sm:gap-5 overflow-x-auto pb-2 pt-1 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
           {displayItems.map((cat, idx) => (
             <Link
+              prefetch={true}
               key={idx}
               href={cat.href}
               className="flex flex-col items-center gap-1 shrink-0 group w-18 sm:w-22 text-center"
@@ -304,6 +306,7 @@ export function CategoryBannerGrid({ categories }: { categories?: any[] }) {
           </h2>
         </div>
         <Link
+          prefetch={true}
           href="/category/electronics"
           className="hidden sm:flex items-center gap-1 text-xs font-bold text-brand-emerald hover:text-brand-dark"
         >
@@ -318,7 +321,7 @@ export function CategoryBannerGrid({ categories }: { categories?: any[] }) {
             key={idx}
             className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-brand-gold/25 hover:border-brand-gold/60 transition-all duration-300 bg-brand-dark"
           >
-            <Link href={banner.href} className="block relative overflow-hidden aspect-[4/3] sm:aspect-[4/3]">
+            <Link prefetch={true} href={banner.href} className="block relative overflow-hidden aspect-[4/3] sm:aspect-[4/3]">
               {/* Product Department Showcase Image */}
               <img
                 src={banner.image}

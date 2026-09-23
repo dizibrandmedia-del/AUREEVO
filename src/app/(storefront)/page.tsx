@@ -23,45 +23,33 @@ import {
   TrustFeaturesBar,
   BrandPartnersBar,
 } from "@/components/storefront/RetailSections";
+import {
+  getCachedCategories,
+  getCachedHomeProducts,
+  getCachedBrands,
+  getCachedWeddingPackages,
+} from "@/lib/cache";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  // Resiliently fetch real data from SQLite/Postgres database
+  // Concurrently fetch real data with high-performance caching & real-time invalidation
   let categories: any[] = [];
   let products: any[] = [];
   let brands: any[] = [];
   let weddingPackages: any[] = [];
 
   try {
-    categories = await db.category.findMany({
-      where: { isActive: true },
-      include: { subcategories: true, _count: { select: { products: true } } },
-      orderBy: { displayOrder: "asc" },
-    });
-
-    products = await db.product.findMany({
-      where: { status: "PUBLISHED" },
-      include: {
-        category: true,
-        subcategory: true,
-        brand: true,
-        images: { orderBy: { displayOrder: "asc" } },
-        attributes: true,
-      },
-      orderBy: { createdAt: "desc" },
-      take: 24,
-    });
-
-    brands = await db.brand.findMany({
-      where: { isActive: true },
-      orderBy: { name: "asc" },
-    });
-
-    weddingPackages = await db.weddingPackage.findMany({
-      where: { isActive: true },
-      orderBy: { packagePrice: "asc" },
-    });
+    const [cats, prods, brnds, pkgs] = await Promise.all([
+      getCachedCategories(),
+      getCachedHomeProducts(),
+      getCachedBrands(),
+      getCachedWeddingPackages(),
+    ]);
+    categories = cats || [];
+    products = prods || [];
+    brands = brnds || [];
+    weddingPackages = pkgs || [];
   } catch (error) {
     console.error("Database query fallback in HomePage:", error);
   }

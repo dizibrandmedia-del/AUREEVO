@@ -102,6 +102,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Product Image */}
           <Link
+            prefetch={true}
             href={`/product/${product.slug}`}
             className="block aspect-square w-full rounded-2xl overflow-hidden bg-brand-bg/50 relative group-hover:opacity-95 transition"
           >
@@ -141,6 +142,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             {/* Title */}
             <Link
+              prefetch={true}
               href={`/product/${product.slug}`}
               className="font-bold text-xs sm:text-sm text-brand-text group-hover:text-brand-emerald transition line-clamp-2 leading-snug"
             >

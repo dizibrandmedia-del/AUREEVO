@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCurrentUser, logAudit } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
+import { invalidateCatalogCache } from "@/lib/cache";
 
 export async function POST(
   req: NextRequest,
@@ -54,6 +55,7 @@ export async function POST(
     );
 
     try {
+      invalidateCatalogCache();
       revalidatePath("/", "layout");
       revalidatePath("/deals");
       revalidatePath(`/product/${updated.slug}`);

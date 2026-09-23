@@ -1,5 +1,7 @@
+import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import "@/styles/globals.css";
+import TopProgressBar from "@/components/common/TopProgressBar";
 
 export const metadata: Metadata = {
   title: "AUREVO.digital | Smart Shopping. Better Living.",
@@ -43,6 +45,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-brand-bg text-brand-text flex flex-col">
+        <Suspense fallback={null}>
+          <TopProgressBar />
+        </Suspense>
         {children}
       </body>
     </html>

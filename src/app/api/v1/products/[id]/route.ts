@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
+import { invalidateCatalogCache } from "@/lib/cache";
 
 export async function GET(
   req: NextRequest,
@@ -165,6 +166,7 @@ export async function PUT(
     });
 
     try {
+      invalidateCatalogCache();
       revalidatePath("/", "layout");
       revalidatePath("/deals");
       revalidatePath(`/product/${updated.slug}`);
@@ -197,6 +199,7 @@ export async function DELETE(
     if (orderItemCount > 0) {
       await db.product.update({ where: { id }, data: { status: "ARCHIVED" } });
       try {
+        invalidateCatalogCache();
         revalidatePath("/", "layout");
         revalidatePath("/deals");
         revalidatePath("/admin/catalog/products");
@@ -218,6 +221,7 @@ export async function DELETE(
     await db.product.delete({ where: { id } });
 
     try {
+      invalidateCatalogCache();
       revalidatePath("/", "layout");
       revalidatePath("/deals");
       revalidatePath("/admin/catalog/products");

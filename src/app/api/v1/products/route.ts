@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
@@ -26,10 +27,10 @@ export async function GET(req: NextRequest) {
     // Build Prisma query where clause
     const where: any = {};
 
-    // Customer or public view defaults to PUBLISHED products only
-    if (status) {
+    // Filter by status if provided (and not 'ALL')
+    if (status && status !== "ALL") {
       where.status = status;
-    } else if (!user || user.role === "CUSTOMER") {
+    } else if (!status && (!user || user.role === "CUSTOMER")) {
       where.status = "PUBLISHED";
     }
 
@@ -216,6 +217,13 @@ export async function POST(req: NextRequest) {
         attributes: true,
       },
     });
+
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/deals");
+      revalidatePath(`/category/${product.categoryId}`);
+      revalidatePath("/admin/catalog/products");
+    } catch (e) {}
 
     return NextResponse.json({ success: true, product }, { status: 201 });
   } catch (err: any) {

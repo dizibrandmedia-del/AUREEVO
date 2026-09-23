@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -69,6 +70,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/cart");
+      revalidatePath("/checkout");
+      revalidatePath("/admin/coupons");
+    } catch (e) {}
+
     return NextResponse.json({ success: true, coupon }, { status: 201 });
   } catch (err: any) {
     console.error("Coupon create error:", err);
@@ -119,6 +127,13 @@ export async function PUT(req: NextRequest) {
       data: updateData,
     });
 
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/cart");
+      revalidatePath("/checkout");
+      revalidatePath("/admin/coupons");
+    } catch (e) {}
+
     return NextResponse.json({ success: true, coupon });
   } catch (err: any) {
     console.error("Coupon update error:", err);
@@ -141,6 +156,13 @@ export async function DELETE(req: NextRequest) {
     }
 
     await db.coupon.delete({ where: { id } });
+
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/cart");
+      revalidatePath("/checkout");
+      revalidatePath("/admin/coupons");
+    } catch (e) {}
 
     return NextResponse.json({ success: true, message: "Coupon deleted successfully" });
   } catch (err: any) {

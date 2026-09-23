@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCurrentUser, logAudit } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
@@ -51,6 +52,16 @@ export async function POST(
       user.id,
       user.name
     );
+
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/deals");
+      revalidatePath(`/product/${updated.slug}`);
+      revalidatePath(`/product/${id}`);
+      revalidatePath(`/category/${updated.categoryId}`);
+      revalidatePath("/admin/approval");
+      revalidatePath("/admin/catalog/products");
+    } catch (e) {}
 
     return NextResponse.json({
       success: true,

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCurrentUser, logAudit } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
@@ -130,6 +131,12 @@ export async function POST(req: NextRequest) {
 
       await logAudit("BULK_CREATE", "PRODUCT", undefined, { count: createdCount }, user.id, user.name);
 
+      try {
+        revalidatePath("/", "layout");
+        revalidatePath("/deals");
+        revalidatePath("/admin/catalog/products");
+      } catch (e) {}
+
       return NextResponse.json({
         success: true,
         message: `Successfully imported ${createdCount} products.`,
@@ -157,6 +164,12 @@ export async function POST(req: NextRequest) {
       }
 
       await logAudit(action, "PRODUCT", undefined, { count: updatedCount }, user.id, user.name);
+
+      try {
+        revalidatePath("/", "layout");
+        revalidatePath("/deals");
+        revalidatePath("/admin/catalog/products");
+      } catch (e) {}
 
       return NextResponse.json({
         success: true,

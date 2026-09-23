@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
@@ -163,6 +164,15 @@ export async function PUT(
       },
     });
 
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/deals");
+      revalidatePath(`/product/${updated.slug}`);
+      revalidatePath(`/product/${id}`);
+      revalidatePath(`/category/${updated.categoryId}`);
+      revalidatePath("/admin/catalog/products");
+    } catch (e) {}
+
     return NextResponse.json({ success: true, product: updated });
   } catch (err: any) {
     console.error("Product update error:", err);
@@ -186,6 +196,11 @@ export async function DELETE(
     const orderItemCount = await db.orderItem.count({ where: { productId: id } });
     if (orderItemCount > 0) {
       await db.product.update({ where: { id }, data: { status: "ARCHIVED" } });
+      try {
+        revalidatePath("/", "layout");
+        revalidatePath("/deals");
+        revalidatePath("/admin/catalog/products");
+      } catch (e) {}
       return NextResponse.json({
         success: true,
         archived: true,
@@ -201,6 +216,12 @@ export async function DELETE(
     await db.supplierProduct.deleteMany({ where: { productId: id } });
 
     await db.product.delete({ where: { id } });
+
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/deals");
+      revalidatePath("/admin/catalog/products");
+    } catch (e) {}
 
     return NextResponse.json({ success: true, message: "Product deleted permanently." });
   } catch (err: any) {

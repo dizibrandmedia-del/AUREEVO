@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -100,6 +101,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/admin/catalog/categories");
+    } catch (e) {}
+
     return NextResponse.json({ success: true, category }, { status: 201 });
   } catch (err: any) {
     console.error("Category creation error:", err);
@@ -181,6 +187,11 @@ export async function PUT(req: NextRequest) {
       });
     }
 
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/admin/catalog/categories");
+    } catch (e) {}
+
     return NextResponse.json({ success: true, category: updatedCategory });
   } catch (err: any) {
     console.error("Category update error:", err);
@@ -227,6 +238,12 @@ export async function DELETE(req: NextRequest) {
     }
 
     await db.category.delete({ where: { id } });
+
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/admin/catalog/categories");
+    } catch (e) {}
+
     return NextResponse.json({ success: true, message: "Category deleted successfully" });
   } catch (err: any) {
     console.error("Category deletion error:", err);

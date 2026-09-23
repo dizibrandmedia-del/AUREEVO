@@ -39,7 +39,7 @@ export default function ProductListingDeskPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const pRes = await fetch("/api/v1/products?limit=100");
+      const pRes = await fetch("/api/v1/products?limit=100&status=ALL");
       const pData = await pRes.json();
       if (pData.success) setProducts(pData.products || []);
 

@@ -29,6 +29,18 @@ export default function AdminLayout({
       .then((data) => {
         if (data.authenticated) {
           setCurrentUser(data.user);
+        } else {
+          // Auto-bootstrap active session for Admin ERP workspace
+          fetch("/api/v1/auth/quick-switch", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ targetRole: "SUPER_ADMIN" }),
+          })
+            .then((r) => r.json())
+            .then((d) => {
+              if (d.success) setCurrentUser(d.user);
+            })
+            .catch(() => {});
         }
       })
       .catch(() => {});

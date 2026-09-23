@@ -22,7 +22,7 @@ export default function ProductApprovalPage() {
   const loadProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/v1/products?limit=100");
+      const res = await fetch("/api/v1/products?limit=100&status=ALL");
       const data = await res.json();
       if (data.success) {
         setProducts(data.products || []);

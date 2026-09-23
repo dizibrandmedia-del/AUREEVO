@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
-import { invalidateCatalogCache } from "@/lib/cache";
+import { invalidateCatalogCache, fetchWithCache } from "@/lib/cache";
 
 export async function GET(req: NextRequest) {
   try {
@@ -75,30 +75,36 @@ export async function GET(req: NextRequest) {
     else if (sort === "discount-desc") orderBy = { discountPercent: "desc" };
     else if (sort === "rating") orderBy = { createdAt: "desc" };
 
-    const totalCount = await db.product.count({ where });
+    const cacheKey = `api:products:${JSON.stringify(where)}:${JSON.stringify(orderBy)}:${page}:${limit}:${canSeeCost}`;
 
-    const rawProducts = await db.product.findMany({
-      where,
-      include: {
-        category: { select: { id: true, name: true, slug: true } },
-        subcategory: { select: { id: true, name: true, slug: true } },
-        brand: { select: { id: true, name: true, slug: true, logo: true } },
-        images: { orderBy: { displayOrder: "asc" } },
-        attributes: true,
-        _count: { select: { reviews: true } },
-      },
-      orderBy,
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    const { totalCount, products } = await fetchWithCache(cacheKey, async () => {
+      const [total, rawProducts] = await Promise.all([
+        db.product.count({ where }),
+        db.product.findMany({
+          where,
+          include: {
+            category: { select: { id: true, name: true, slug: true } },
+            subcategory: { select: { id: true, name: true, slug: true } },
+            brand: { select: { id: true, name: true, slug: true, logo: true } },
+            images: { orderBy: { displayOrder: "asc" } },
+            attributes: true,
+            _count: { select: { reviews: true } },
+          },
+          orderBy,
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+      ]);
 
-    // Strip sensitive purchasePrice if user is unauthorized
-    const products = rawProducts.map((p) => {
-      const item: any = { ...p };
-      if (!canSeeCost) {
-        delete item.purchasePrice;
-      }
-      return item;
+      const stripped = rawProducts.map((p) => {
+        const item: any = { ...p };
+        if (!canSeeCost) {
+          delete item.purchasePrice;
+        }
+        return item;
+      });
+
+      return { totalCount: total, products: stripped };
     });
 
     return NextResponse.json({

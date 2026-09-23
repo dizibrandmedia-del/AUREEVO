@@ -1,11 +1,29 @@
 const { PrismaClient } = require('@prisma/client');
 const { createClient } = require('@libsql/client');
 
+const fs = require('fs');
+const path = require('path');
+
+function getEnv(key) {
+  if (process.env[key]) return process.env[key];
+  try {
+    const envPath = path.resolve(__dirname, '../.env');
+    const content = fs.readFileSync(envPath, 'utf8');
+    for (const line of content.split('\n')) {
+      const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+      if (match && match[1] === key) {
+        return (match[2] || '').trim().replace(/^['"](.*)['"]$/, '$1');
+      }
+    }
+  } catch (e) {}
+  return '';
+}
+
 const localDb = new PrismaClient();
 
 const turso = createClient({
-  url: 'libsql://aurevo-dizibrandmedia-del.aws-ap-south-1.turso.io',
-  authToken: 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTAxMDQyMDksImlkIjoiMDFhMGNhODYtMmIwMS03MTJjLWI1YTYtMDMxZjNkOWUzZmQ5Iiwia2lkIjoibXpldXhwVzJ0aDZNUG1KVzRxQlB6LUhCTHlMaWw0VXVOX2dCeUJoQTQzWSIsInJpZCI6IjE5YjVkYjYyLTc0NjQtNDQxOS1hNjRhLWQ5YTZmOTM1ZDkwMiJ9.rNllR5H5zSYS58o_PGw-IgJRS49MGreKioPh-D6L48dOJNKfDNlGkF3EOpOdL0HTmKAnNb5RJ5VY87BJkySeAA'
+  url: getEnv('TURSO_DATABASE_URL') || 'libsql://aurevo-dizibrandmedia-del.aws-ap-south-1.turso.io',
+  authToken: getEnv('TURSO_AUTH_TOKEN')
 });
 
 async function sync() {

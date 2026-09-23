@@ -36,6 +36,20 @@ export interface MenuCategory {
   columns?: Column[];
 }
 
+export function getCategoryIcon(slug: string = ""): any {
+  const s = slug.toLowerCase();
+  if (s.includes("tv") || s.includes("electronic")) return Tv;
+  if (s.includes("ac") || s.includes("cool")) return Wind;
+  if (s.includes("fridge") || s.includes("refrigerat")) return Refrigerator;
+  if (s.includes("wash") || s.includes("clean")) return Droplets;
+  if (s.includes("kitchen") || s.includes("appliance")) return UtensilsCrossed;
+  if (s.includes("furnitur") || s.includes("bed") || s.includes("sofa")) return Armchair;
+  if (s.includes("home") || s.includes("living")) return Home;
+  if (s.includes("wedding")) return Sparkles;
+  if (s.includes("deal")) return Flame;
+  return Tag;
+}
+
 export const MENU_CATEGORIES: MenuCategory[] = [
   {
     name: "Electronics",
@@ -250,14 +264,110 @@ export const MENU_CATEGORIES: MenuCategory[] = [
   },
 ];
 
-export default function MegaMenu() {
+export function formatCategoriesToMenu(dbCategories: any[]): MenuCategory[] {
+  if (!dbCategories || dbCategories.length === 0) return MENU_CATEGORIES;
+
+  const dynamicItems: MenuCategory[] = dbCategories
+    .filter((c: any) => c.isActive !== false)
+    .map((c: any) => {
+      const Icon = getCategoryIcon(c.slug);
+      const subcats = c.subcategories || [];
+
+      let columns: Column[] = [];
+      if (subcats.length > 0) {
+        const chunkSize = 4;
+        for (let i = 0; i < subcats.length; i += chunkSize) {
+          const chunk = subcats.slice(i, i + chunkSize);
+          columns.push({
+            title: i === 0 ? "Featured Types" : "Popular Varieties",
+            items: chunk.map((s: any) => ({
+              name: s.name,
+              href: `/category/${c.slug}?sub=${s.slug}`,
+            })),
+          });
+        }
+
+        columns.push({
+          title: "Quick Links",
+          items: [
+            { name: `All ${c.name} Catalog`, href: `/category/${c.slug}` },
+            { name: "Top Rated Festive Deals", href: `/deals` },
+          ],
+        });
+      }
+
+      return {
+        name: c.name,
+        slug: c.slug,
+        icon: Icon,
+        columns: columns.length > 0 ? columns : undefined,
+      };
+    });
+
+  // Always append Wedding Packages & Deals
+  dynamicItems.push({
+    name: "Wedding Packages",
+    slug: "wedding-packages",
+    icon: Sparkles,
+    highlight: true,
+    columns: [
+      {
+        title: "Choose by Budget",
+        items: [
+          { name: "Silver Package (₹1 Lakh)", href: "/wedding-packages?tier=1_LAKH" },
+          { name: "Gold Complete Package (₹2 Lakh)", href: "/wedding-packages?tier=2_LAKH" },
+          { name: "Platinum Suite (₹3 Lakh)", href: "/wedding-packages?tier=3_LAKH" },
+          { name: "Diamond Grand (₹5 Lakh)", href: "/wedding-packages?tier=5_LAKH" },
+          { name: "Royal Emperor (₹10 Lakh+)", href: "/wedding-packages?tier=10_LAKH_PLUS" },
+        ],
+      },
+      {
+        title: "Package Features",
+        items: [
+          { name: "Custom Home Bundles", href: "/wedding-packages" },
+          { name: "Save up to 35% on Combo", href: "/wedding-packages" },
+          { name: "Free Delivery & Assembly", href: "/wedding-packages" },
+          { name: "Official Sales Quotation PDF", href: "/wedding-packages" },
+        ],
+      },
+    ],
+  });
+
+  dynamicItems.push({
+    name: "Festive Deals",
+    slug: "deals",
+    icon: Flame,
+    highlight: true,
+  });
+
+  return dynamicItems;
+}
+
+export default function MegaMenu({ initialCategories }: { initialCategories?: any[] }) {
+  const [categories, setCategories] = useState<MenuCategory[]>(() => {
+    if (initialCategories && initialCategories.length > 0) {
+      return formatCategoriesToMenu(initialCategories);
+    }
+    return MENU_CATEGORIES;
+  });
   const [activeCategory, setActiveCategory] = useState<MenuCategory | null>(null);
+
+  React.useEffect(() => {
+    fetch("/api/v1/categories")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.categories?.length > 0) {
+          setCategories(formatCategoriesToMenu(data.categories));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <nav className="hidden lg:block border-t border-brand-gold/15 bg-brand-dark relative shadow-inner">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ul className="flex items-center justify-between gap-1 py-1.5 text-xs font-semibold text-slate-200">
-          {MENU_CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const Icon = cat.icon;
             const isHighlight = cat.highlight;
 

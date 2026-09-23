@@ -92,7 +92,7 @@ export default function AdminProductsCatalogPage() {
     setLoading(true);
     try {
       const [prodRes, catRes, brandRes] = await Promise.all([
-        fetch("/api/v1/products?limit=100"),
+        fetch("/api/v1/products?limit=100&status=ALL"),
         fetch("/api/v1/categories"),
         fetch("/api/v1/brands"),
       ]);

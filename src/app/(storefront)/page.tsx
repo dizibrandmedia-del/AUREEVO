@@ -24,7 +24,7 @@ import {
   BrandPartnersBar,
 } from "@/components/storefront/RetailSections";
 
-export const revalidate = 60; // ISR cache revalidation every minute
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   // Resiliently fetch real data from SQLite/Postgres database
@@ -81,13 +81,13 @@ export default async function HomePage() {
   return (
     <div className="space-y-8 sm:space-y-12 pb-12">
       {/* 1. KASHIKA-STYLE TOP CATEGORY STORY CIRCLES */}
-      <CategoryStoryCircles />
+      <CategoryStoryCircles categories={categories} />
 
       {/* 2. AUREEVO BRAND-MATCHING HERO CAROUSEL SLIDER */}
       <HeroBannerSlider />
 
       {/* 3. 2x4 VISUAL CATEGORY BANNER GRID (450x250) */}
-      <CategoryBannerGrid />
+      <CategoryBannerGrid categories={categories} />
 
       {/* 4. BEST DEALS (Countdown + Savings) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

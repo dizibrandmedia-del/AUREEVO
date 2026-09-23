@@ -171,8 +171,47 @@ const BRAND_PARTNERS = [
   { name: "AUREVO Living", slug: "aurevo-living", logo: "/images/brands/aurevo-living.svg" },
 ];
 
+const DEFAULT_CATEGORY_IMAGES: Record<string, string> = {
+  electronics: "/images/banners/dept-tv.jpg",
+  "ac-cooling": "/images/banners/dept-ac.jpg",
+  refrigeration: "/images/banners/dept-fridge.jpg",
+  "washing-cleaning": "/images/banners/dept-washing.jpg",
+  "kitchen-appliances": "/images/banners/slider-5.jpg",
+  furniture: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&auto=format&fit=crop&q=80",
+  "home-living": "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&auto=format&fit=crop&q=80",
+};
+
 // A. Top Category Story Circles (horizontal swipe on mobile)
-export function CategoryStoryCircles() {
+export function CategoryStoryCircles({ categories }: { categories?: any[] }) {
+  const displayItems = React.useMemo(() => {
+    if (!categories || categories.length === 0) return STORY_CATEGORIES;
+
+    const list = categories
+      .filter((c: any) => c.isActive !== false)
+      .map((c: any) => ({
+        name: c.name,
+        href: `/category/${c.slug}`,
+        image: c.image || DEFAULT_CATEGORY_IMAGES[c.slug] || "/images/banners/slider-1.jpg",
+        badge: c.subcategories?.length ? `${c.subcategories.length} Types` : "Explore",
+      }));
+
+    // Ensure Wedding Packages & Deals are accessible
+    list.push({
+      name: "Wedding Suites",
+      href: "/wedding-packages",
+      image: "/images/banners/slider-4.jpg",
+      badge: "Royal Bundle",
+    });
+    list.push({
+      name: "Festive Deals",
+      href: "/deals",
+      image: "/images/banners/slider-1.jpg",
+      badge: "Up to 55%",
+    });
+
+    return list;
+  }, [categories]);
+
   return (
     <section className="bg-white border-b border-brand-border/60 py-3 sm:py-4 shadow-2xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -194,7 +233,7 @@ export function CategoryStoryCircles() {
 
         {/* Scrollable Story Row */}
         <div className="flex items-start gap-3.5 sm:gap-5 overflow-x-auto pb-2 pt-1 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-          {STORY_CATEGORIES.map((cat, idx) => (
+          {displayItems.map((cat, idx) => (
             <Link
               key={idx}
               href={cat.href}
@@ -228,7 +267,31 @@ export function CategoryStoryCircles() {
 }
 
 // B. 2x4 Category Department Banners with Brand Emerald-Gold Styling
-export function CategoryBannerGrid() {
+export function CategoryBannerGrid({ categories }: { categories?: any[] }) {
+  const displayBanners = React.useMemo(() => {
+    if (!categories || categories.length === 0) return AUREEVO_DEPARTMENT_BANNERS;
+
+    return categories
+      .filter((c: any) => c.isActive !== false)
+      .slice(0, 8)
+      .map((c: any, idx: number) => {
+        const subNames =
+          c.subcategories?.map((s: any) => s.name).slice(0, 3).join(", ") ||
+          c.description ||
+          "Explore Collections";
+
+        const tags = ["Featured Department", "Free Installation", "Exchange Bonus", "Royal Warranty", "Instant Delivery"];
+
+        return {
+          title: c.name,
+          subtitle: subNames,
+          href: `/category/${c.slug}`,
+          image: c.image || DEFAULT_CATEGORY_IMAGES[c.slug] || "/images/banners/slider-1.jpg",
+          tag: tags[idx % tags.length],
+        };
+      });
+  }, [categories]);
+
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between mb-4">
@@ -250,7 +313,7 @@ export function CategoryBannerGrid() {
 
       {/* 2 columns on mobile (col-6), 4 columns on desktop (col-lg-3) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-        {AUREEVO_DEPARTMENT_BANNERS.map((banner, idx) => (
+        {displayBanners.map((banner, idx) => (
           <div
             key={idx}
             className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-brand-gold/25 hover:border-brand-gold/60 transition-all duration-300 bg-brand-dark"

@@ -24,7 +24,7 @@ import {
   Lock,
 } from "lucide-react";
 import Logo from "@/components/common/Logo";
-import { MENU_CATEGORIES } from "./MegaMenu";
+import { MENU_CATEGORIES, formatCategoriesToMenu } from "./MegaMenu";
 import { useWishlistStore, useCompareStore, useCartStore } from "@/lib/store";
 
 interface MobileDrawerProps {
@@ -43,7 +43,19 @@ export default function MobileDrawer({
   onPincodeClick,
   currentPincode,
 }: MobileDrawerProps) {
+  const [categories, setCategories] = useState(() => MENU_CATEGORIES);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/v1/categories")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.categories?.length > 0) {
+          setCategories(formatCategoriesToMenu(data.categories));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const cartCount = useCartStore((s) => s.getItemCount());
   const wishlistCount = useWishlistStore((s) => s.items.length);
@@ -211,7 +223,7 @@ export default function MobileDrawer({
             </div>
 
             <nav className="space-y-1 px-2 mt-1">
-              {MENU_CATEGORIES.map((cat) => {
+              {categories.map((cat) => {
                 const Icon = cat.icon;
                 const isExpanded = expandedCategory === cat.slug;
                 const hasSub = Boolean(cat.columns && cat.columns.length > 0);
